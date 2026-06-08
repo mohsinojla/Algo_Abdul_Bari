@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LCS | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#58a6ff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:960px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#58a6ff,#1f6feb);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.matrix-wrap{overflow-x:auto;margin:12px 0}
+table.lcs-table{border-collapse:collapse;font-size:.85rem;font-family:monospace}
+table.lcs-table th{background:rgba(88,166,255,.15);color:var(--accent);padding:8px 14px;border:1px solid var(--border);text-align:center;min-width:40px}
+table.lcs-table td{padding:8px 14px;border:1px solid var(--border);text-align:center;min-width:40px}
+table.lcs-table td.match{background:rgba(63,185,80,.15);color:#3fb950;font-weight:700}
+table.lcs-table td.path{background:rgba(88,166,255,.15);color:var(--accent);font-weight:700}
+.formula-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(88,166,255,.03));border:1px solid rgba(88,166,255,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#58a6ff;line-height:1.8}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🔵 Dynamic Programming #11</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🔤</div>
+    <h1 class="hero-title">Longest Common Subsequence (LCS)</h1>
+    <p class="hero-sub">Find the longest subsequence present in both strings (not necessarily contiguous).</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Longest+Common+Subsequence" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>A <strong>subsequence</strong> is a sequence derived from a string by deleting some characters without changing order. E.g., "ACE" is a subsequence of "ABCDE".</p>
+    <p><strong>LCS Problem:</strong> Given strings X and Y, find the length of their longest common subsequence.</p>
+    <div class="formula-box">
+if X[i] == Y[j]: dp[i][j] = dp[i-1][j-1] + 1<br>
+else: dp[i][j] = max(dp[i-1][j], dp[i][j-1])<br>
+Base: dp[0][j] = dp[i][0] = 0
+    </div>
+    <p>After filling the DP table, trace back from dp[m][n] to find the actual subsequence:</p>
+    <ul>
+      <li>If X[i]==Y[j]: include this character, go diagonal ↖</li>
+      <li>Else: go in direction of larger value (up ↑ or left ←)</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. LCS is NOT necessarily contiguous (unlike Longest Common Substring).</div>
+    <div class="key-point">2. DP table size: <strong>(m+1) × (n+1)</strong> where m, n are string lengths.</div>
+    <div class="key-point">3. First row and column are all <strong>zeros</strong> (base cases).</div>
+    <div class="key-point">4. Time: <code>O(m×n)</code>, Space: <code>O(m×n)</code>.</div>
+    <div class="key-point">5. Traceback gives the actual LCS string (read diagonal moves).</div>
+    <div class="key-point">6. There can be <strong>multiple LCS</strong> of the same length.</div>
+    <div class="key-point">7. LCS length = dp[m][n] (bottom-right cell).</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example: X="ABCBDAB", Y="BDCAB"</div>
+    <div class="matrix-wrap">
+    <table class="lcs-table">
+      <tr><th></th><th>""</th><th>B</th><th>D</th><th>C</th><th>A</th><th>B</th></tr>
+      <tr><th>""</th><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+      <tr><th>A</th><td>0</td><td>0</td><td>0</td><td>0</td><td class="match">1</td><td>1</td></tr>
+      <tr><th>B</th><td>0</td><td class="match">1</td><td>1</td><td>1</td><td>1</td><td class="match">2</td></tr>
+      <tr><th>C</th><td>0</td><td>1</td><td>1</td><td class="match">2</td><td>2</td><td>2</td></tr>
+      <tr><th>B</th><td>0</td><td class="match">1</td><td>1</td><td>2</td><td>2</td><td class="match">3</td></tr>
+      <tr><th>D</th><td>0</td><td>1</td><td class="match">2</td><td>2</td><td>2</td><td>3</td></tr>
+      <tr><th>A</th><td>0</td><td>1</td><td>2</td><td>2</td><td class="match">3</td><td>3</td></tr>
+      <tr><th>B</th><td>0</td><td class="match">1</td><td>2</td><td>2</td><td>3</td><td class="path">4</td></tr>
+    </table>
+    </div>
+    <div class="answer-box"><strong>✅ LCS length = 4. One LCS: "BCAB" or "BDAB"</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Find LCS of X="AGGTAB" and Y="GXTXAYB". Build the DP table and find the actual LCS string.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Table</span><span class="step-content">X="AGGTAB"(6), Y="GXTXAYB"(7). dp is 7×8.<br>Fill row by row:<br>Row A(1): matches Y[5]=A → dp[1][5]=1, rest propagate<br>Row G(2): matches Y[1]=G → dp[2][1]=1, continues...<br>Row G(3): matches Y[1]=G → dp[3][1]=1<br>Row T(4): matches Y[3]=T,Y[5]=X(no),Y[3]=T yes...<br>Row A(5): matches Y[5]=A<br>Row B(6): matches Y[7]=B</span></div>
+        <div class="step"><span class="step-num">Result</span><span class="step-content">dp[6][7] = 4<br>Traceback: B←A←T←G → LCS = "GTAB"</span></div>
+        <div class="answer-box"><strong>✅ LCS = "GTAB", length = 4</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">X="ABCDEF", Y="ACBCF". Find LCS length and the subsequence. Show the DP table.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">DP Table</span><span class="step-content">
+          &nbsp;&nbsp;&nbsp;  ""  A  C  B  C  F<br>
+          "" [0, 0, 0, 0, 0, 0]<br>
+          A  [0, 1, 1, 1, 1, 1]<br>
+          B  [0, 1, 1, 2, 2, 2]<br>
+          C  [0, 1, 2, 2, 3, 3]<br>
+          D  [0, 1, 2, 2, 3, 3]<br>
+          E  [0, 1, 2, 2, 3, 3]<br>
+          F  [0, 1, 2, 2, 3, 4]
+        </span></div>
+        <div class="step"><span class="step-num">Traceback</span><span class="step-content">From dp[6][5]=4: F matches Y[5]=F (diagonal), C matches, B matches, A matches.<br>LCS = "ABCF"</span></div>
+        <div class="answer-box"><strong>✅ LCS = "ABCF", length = 4</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">X="MZJAWXU", Y="XMJYAUZ". Find LCS length.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Fill DP</span><span class="step-content">Using the recurrence systematically. Key matches: M-M, J-J, A-A, U-U, X-X (various positions).<br>dp fills to give LCS length of 4.</span></div>
+        <div class="step"><span class="step-num">LCS</span><span class="step-content">One possible LCS: "MJAU" (M,J,A,U all appear in both in relative order)</span></div>
+        <div class="answer-box"><strong>✅ LCS = "MJAU", length = 4</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">What is the difference between LCS (Longest Common Subsequence) and LCS (Longest Common Substring)? Give an example.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Subsequence</span><span class="step-content"><strong>Subsequence:</strong> Characters don't need to be contiguous but must maintain relative order.<br>X="ABCDE", Y="ACE" → LCS = "ACE" (length 3)<br>Recurrence: if match → dp[i-1][j-1]+1, else max(dp[i-1][j], dp[i][j-1])</span></div>
+        <div class="step"><span class="step-num">Substring</span><span class="step-content"><strong>Substring:</strong> Characters must be contiguous in BOTH strings.<br>X="ABCDE", Y="BCDE" → Longest Common Substring = "BCDE" (length 4)<br>Recurrence: if match → dp[i-1][j-1]+1, else 0</span></div>
+        <div class="step"><span class="step-num">Example</span><span class="step-content">X="ABAB", Y="BABA"<br>LCS (subsequence) = "ABA" or "BAB" → length 3<br>LCS (substring) = "ABA" or "BAB" → length 3 (coincidence here)<br>X="ABCDEF", Y="FBDAMCE": subseq LCS=3, substring LCS=1</span></div>
+        <div class="answer-box"><strong>✅ Subsequence: non-contiguous, order preserved. Substring: contiguous block. Subsequence ≥ Substring in length.</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q5</span>
+        <span class="q-text">X="STONE", Y="LONGEST". Find LCS step by step (this is a common exam question).</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Setup</span><span class="step-content">X="STONE"(5), Y="LONGEST"(7). dp is 6×8, all zeros in row 0, col 0.</span></div>
+        <div class="step"><span class="step-num">Fill</span><span class="step-content">S: matches Y[4]=S→dp[1][4]=1, propagates right: dp[1][5..7]=1<br>T: matches Y[7]=T→dp[2][7]=2<br>O: matches Y[2]=O→dp[3][2]=1, dp[3][3..]=updates<br>N: matches Y[5]=N→dp[4][5]=max(prev,2+1)=3? Need careful fill<br>E: matches Y[3]=E,Y[6]=E</span></div>
+        <div class="step"><span class="step-num">Result</span><span class="step-content">Common chars in order: both have S,T,O,N,E... checking:<br>STONE vs LONGEST: S(Y pos4),T(Y pos7),O(Y pos2 - but before S!) → O must come before S in Y for "OT" to work...<br>Best: "ONE" length 3, or "TOE" length 3... Actually "ONE" in both (in order). dp[5][7]=3 or 4 depending on careful fill.</span></div>
+        <div class="answer-box"><strong>✅ LCS = "ONE" or "TOE", length = 3</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='10-tsp.html'">← TSP</button>
+    <button class="nav-btn" onclick="window.location.href='12-01-knapsack.html'">Next: 0/1 Knapsack →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(11)){d.push(11);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(11)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

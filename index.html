@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm Exam Prep 🎓 | Abdul Bari Topics</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;
+  --border:#30363d;--text:#e6edf3;--dim:#8b949e;
+  --green:#3fb950;--blue:#58a6ff;--orange:#f0883e;
+  --purple:#bc8cff;--red:#ff7b72;--yellow:#e3b341;
+  --pink:#f778ba;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* HEADER */
+header{
+  background:linear-gradient(135deg,#0d1117 0%,#161b22 50%,#0d1117 100%);
+  border-bottom:1px solid var(--border);
+  padding:28px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  backdrop-filter:blur(10px);
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo h1{font-size:1.5rem;font-weight:700;background:linear-gradient(90deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo span{font-size:1.8rem}
+
+/* TIMER */
+.timer-box{
+  display:flex;align-items:center;gap:16px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:10px 20px;
+}
+#timerDisplay{font-size:1.4rem;font-weight:700;font-family:monospace;color:var(--yellow)}
+.timer-btn{background:none;border:1px solid var(--border);color:var(--text);padding:6px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;transition:.2s}
+.timer-btn:hover{background:var(--surface2);border-color:var(--blue)}
+
+/* PROGRESS BAR */
+.progress-section{padding:20px 40px;background:var(--surface);border-bottom:1px solid var(--border)}
+.progress-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:0.9rem}
+.progress-bar-bg{background:var(--surface2);border-radius:10px;height:10px;overflow:hidden}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:10px;transition:width .5s ease}
+.progress-label{color:var(--dim);font-size:0.85rem}
+#progressText{color:var(--green);font-weight:600}
+
+/* HERO */
+.hero{padding:40px 40px 20px;text-align:center}
+.hero h2{font-size:2rem;font-weight:700;margin-bottom:10px}
+.hero p{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto}
+
+/* CATEGORY FILTER */
+.filters{display:flex;gap:10px;justify-content:center;padding:20px 40px;flex-wrap:wrap}
+.filter-btn{
+  padding:8px 20px;border-radius:20px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--dim);cursor:pointer;font-size:0.85rem;transition:.2s;
+}
+.filter-btn.active,.filter-btn:hover{color:var(--text);border-color:var(--blue);background:rgba(88,166,255,.1)}
+.filter-btn[data-cat="Greedy"].active{border-color:var(--orange);background:rgba(240,136,62,.1);color:var(--orange)}
+.filter-btn[data-cat="Dynamic Programming"].active{border-color:var(--blue);background:rgba(88,166,255,.1);color:var(--blue)}
+.filter-btn[data-cat="Graph"].active{border-color:var(--green);background:rgba(63,185,80,.1);color:var(--green)}
+.filter-btn[data-cat="Theory"].active{border-color:var(--purple);background:rgba(188,140,255,.1);color:var(--purple)}
+
+/* TOPIC GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;padding:10px 40px 60px}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:22px;cursor:pointer;transition:.25s;position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--card-color,var(--blue));
+}
+.card:hover{transform:translateY(-4px);border-color:var(--card-color,var(--blue));box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.card.done{opacity:.75}
+.card.done::after{content:'✓ Done';position:absolute;top:14px;right:14px;background:var(--green);color:#000;font-size:0.7rem;font-weight:700;padding:3px 8px;border-radius:10px}
+.card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.card-icon{font-size:1.8rem}
+.card-num{font-size:0.75rem;font-weight:600;color:var(--dim);background:var(--surface2);padding:3px 8px;border-radius:6px}
+.card-title{font-size:1.05rem;font-weight:600;margin-bottom:6px}
+.card-cat{font-size:0.78rem;padding:3px 10px;border-radius:12px;display:inline-block;font-weight:600}
+.card-cat.Greedy{background:rgba(240,136,62,.15);color:var(--orange)}
+.card-cat.dp{background:rgba(88,166,255,.15);color:var(--blue)}
+.card-cat.Graph{background:rgba(63,185,80,.15);color:var(--green)}
+.card-cat.Theory{background:rgba(188,140,255,.15);color:var(--purple)}
+.card-meta{margin-top:12px;font-size:0.8rem;color:var(--dim);display:flex;gap:10px}
+
+/* FOOTER */
+footer{text-align:center;padding:20px;color:var(--dim);font-size:0.82rem;border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span>🎓</span>
+    <h1>Algorithm Exam Prep</h1>
+  </div>
+  <div class="timer-box">
+    <span style="color:var(--dim);font-size:.85rem">⏱ Study Timer</span>
+    <div id="timerDisplay">00:00:00</div>
+    <button class="timer-btn" id="timerBtn" onclick="toggleTimer()">Start</button>
+    <button class="timer-btn" onclick="resetTimer()">Reset</button>
+  </div>
+</header>
+
+<div class="progress-section">
+  <div class="progress-header">
+    <span class="progress-label">📚 Topics Completed</span>
+    <span id="progressText">0 / 18</span>
+  </div>
+  <div class="progress-bar-bg">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<div class="hero">
+  <h2>Post Mid-Term Topics 📖</h2>
+  <p>Click any topic to study. Watch Abdul Bari's video first, then dive into concepts, key points & practice questions with step-by-step solutions.</p>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" data-cat="All" onclick="filterTopics('All',this)">All (18)</button>
+  <button class="filter-btn" data-cat="Greedy" onclick="filterTopics('Greedy',this)">🟠 Greedy</button>
+  <button class="filter-btn" data-cat="Dynamic Programming" onclick="filterTopics('Dynamic Programming',this)">🔵 Dynamic Programming</button>
+  <button class="filter-btn" data-cat="Graph" onclick="filterTopics('Graph',this)">🟢 Graph</button>
+  <button class="filter-btn" data-cat="Theory" onclick="filterTopics('Theory',this)">🟣 Theory</button>
+</div>
+
+<div class="grid" id="topicGrid"></div>
+
+<footer>Built for your exam success 💪 | Topics from Abdul Bari's Algorithm Playlist</footer>
+
+<script>
+const topics = [
+  {id:1,title:"Fractional Knapsack",cat:"Greedy",icon:"🎒",color:"#f0883e",time:"25 min",qs:5,file:"Pages/01-fractional-knapsack.html"},
+  {id:2,title:"Job Sequencing",cat:"Greedy",icon:"📋",color:"#f0883e",time:"25 min",qs:5,file:"Pages/02-job-sequencing.html"},
+  {id:3,title:"Huffman Encoding",cat:"Greedy",icon:"🌳",color:"#f0883e",time:"30 min",qs:4,file:"Pages/03-huffman-encoding.html"},
+  {id:4,title:"Optimal Merge Pattern",cat:"Greedy",icon:"🔀",color:"#f0883e",time:"20 min",qs:4,file:"Pages/04-optimal-merge.html"},
+  {id:5,title:"Dijkstra's Algorithm",cat:"Graph",icon:"🗺️",color:"#3fb950",time:"35 min",qs:4,file:"Pages/05-dijkstra.html"},
+  {id:6,title:"DP – Tabulation",cat:"Dynamic Programming",icon:"📊",color:"#58a6ff",time:"25 min",qs:4,file:"Pages/06-dp-tabulation.html"},
+  {id:7,title:"DP – Memoization",cat:"Dynamic Programming",icon:"🗃️",color:"#58a6ff",time:"20 min",qs:4,file:"Pages/07-dp-memoization.html"},
+  {id:8,title:"Floyd-Warshall",cat:"Graph",icon:"🔁",color:"#3fb950",time:"30 min",qs:4,file:"Pages/08-floyd-warshall.html"},
+  {id:9,title:"Bellman-Ford",cat:"Graph",icon:"⚡",color:"#3fb950",time:"30 min",qs:4,file:"Pages/09-bellman-ford.html"},
+  {id:10,title:"Travelling Salesman Problem",cat:"Dynamic Programming",icon:"🚗",color:"#58a6ff",time:"35 min",qs:3,file:"Pages/10-tsp.html"},
+  {id:11,title:"LCS – Longest Common Subsequence",cat:"Dynamic Programming",icon:"🔤",color:"#58a6ff",time:"30 min",qs:5,file:"Pages/11-lcs.html"},
+  {id:12,title:"0/1 Knapsack (DP)",cat:"Dynamic Programming",icon:"🎒",color:"#58a6ff",time:"30 min",qs:5,file:"Pages/12-01-knapsack.html"},
+  {id:13,title:"DFS and BFS Traversals",cat:"Graph",icon:"🕸️",color:"#3fb950",time:"30 min",qs:5,file:"Pages/13-dfs-bfs.html"},
+  {id:14,title:"Principle of Optimality",cat:"Theory",icon:"💡",color:"#bc8cff",time:"15 min",qs:3,file:"Pages/14-principle-optimality.html"},
+  {id:15,title:"Multistage Graph",cat:"Dynamic Programming",icon:"🧩",color:"#58a6ff",time:"30 min",qs:4,file:"Pages/15-multistage-graph.html"},
+  {id:16,title:"Matrix-Chain Multiplication",cat:"Dynamic Programming",icon:"🔢",color:"#58a6ff",time:"40 min",qs:4,file:"Pages/16-matrix-chain.html"},
+  {id:17,title:"Optimal Binary Search Tree",cat:"Dynamic Programming",icon:"🌲",color:"#58a6ff",time:"35 min",qs:3,file:"Pages/17-optimal-bst.html"},
+  {id:18,title:"NP-Hard & NP-Complete / Clique",cat:"Theory",icon:"🧠",color:"#bc8cff",time:"25 min",qs:4,file:"Pages/18-np-complete.html"},
+];
+
+const done = JSON.parse(localStorage.getItem('algoDone')||'[]');
+
+function renderGrid(filter='All'){
+  const grid=document.getElementById('topicGrid');
+  grid.innerHTML='';
+  topics.filter(t=>filter==='All'||t.cat===filter).forEach(t=>{
+    const isDone=done.includes(t.id);
+    const catClass=t.cat==='Dynamic Programming'?'dp':t.cat;
+    grid.innerHTML+=`
+    <div class="card${isDone?' done':''}" style="--card-color:${t.color}" onclick="openTopic('${t.file}',${t.id})">
+      <div class="card-header">
+        <span class="card-icon">${t.icon}</span>
+        <span class="card-num">#${t.id}</span>
+      </div>
+      <div class="card-title">${t.title}</div>
+      <span class="card-cat ${catClass}">${t.cat}</span>
+      <div class="card-meta">
+        <span>⏱ ~${t.time}</span>
+        <span>❓ ${t.qs} questions</span>
+      </div>
+    </div>`;
+  });
+}
+
+function filterTopics(cat,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid(cat);
+}
+
+function openTopic(file,id){
+  localStorage.setItem('currentTopic',id);
+  window.location.href=file;
+}
+
+function updateProgress(){
+  const pct=Math.round(done.length/18*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressText').textContent=done.length+' / 18';
+}
+
+// Timer
+let timerRunning=false,timerSeconds=0,timerInterval;
+function toggleTimer(){
+  timerRunning=!timerRunning;
+  document.getElementById('timerBtn').textContent=timerRunning?'Pause':'Resume';
+  if(timerRunning) timerInterval=setInterval(()=>{
+    timerSeconds++;
+    const h=String(Math.floor(timerSeconds/3600)).padStart(2,'0');
+    const m=String(Math.floor((timerSeconds%3600)/60)).padStart(2,'0');
+    const s=String(timerSeconds%60).padStart(2,'0');
+    document.getElementById('timerDisplay').textContent=h+':'+m+':'+s;
+  },1000);
+  else clearInterval(timerInterval);
+}
+function resetTimer(){
+  clearInterval(timerInterval);timerRunning=false;timerSeconds=0;
+  document.getElementById('timerDisplay').textContent='00:00:00';
+  document.getElementById('timerBtn').textContent='Start';
+}
+
+renderGrid();
+updateProgress();
+</script>
+</body>
+</html>

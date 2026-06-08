@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DFS & BFS | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#3fb950}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(63,185,80,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#58a6ff;color:#000}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+pre{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:monospace;font-size:.85rem;color:#c9d1d9;margin:12px 0;line-height:1.7}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.col-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.col-title{font-weight:700;margin-bottom:10px;font-size:.95rem}
+.col-title.dfs{color:#f0883e}
+.col-title.bfs{color:#58a6ff}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#3fb950,#2ea043);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟢 Graph Traversal #13</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🕸️</div>
+    <h1 class="hero-title">DFS and BFS Traversals</h1>
+    <p class="hero-sub">Two fundamental ways to explore all vertices in a graph or tree.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+BFS+DFS+Graph+Traversal" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-title dfs">🟠 DFS — Depth First Search</div>
+        <p style="font-size:.88rem">Go as <strong>deep as possible</strong> before backtracking. Uses a <strong>stack</strong> (or recursion).</p>
+        <pre style="font-size:.8rem;margin:0">DFS(v):
+  mark v visited
+  for each neighbor u of v:
+    if u not visited:
+      DFS(u)  // go deeper</pre>
+      </div>
+      <div class="col-card">
+        <div class="col-title bfs">🔵 BFS — Breadth First Search</div>
+        <p style="font-size:.88rem">Explore all neighbors at current level before going deeper. Uses a <strong>queue</strong>.</p>
+        <pre style="font-size:.8rem;margin:0">BFS(start):
+  enqueue start, mark visited
+  while queue not empty:
+    v = dequeue
+    for each neighbor u:
+      if not visited:
+        enqueue u, mark visited</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. DFS uses a <strong>Stack</strong> (LIFO); BFS uses a <strong>Queue</strong> (FIFO).</div>
+    <div class="key-point">2. Both visit every vertex exactly once: Time <code>O(V+E)</code>, Space <code>O(V)</code>.</div>
+    <div class="key-point">3. BFS gives <strong>shortest path</strong> (fewest edges) in unweighted graphs.</div>
+    <div class="key-point">4. DFS is used for: topological sort, cycle detection, connected components, maze solving.</div>
+    <div class="key-point">5. BFS is used for: shortest path, level-order traversal, social network distance.</div>
+    <div class="key-point">6. DFS can be <strong>recursive</strong> (implicit stack) or iterative (explicit stack).</div>
+    <div class="key-point">7. For disconnected graphs: run DFS/BFS from every unvisited vertex.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p>Graph (adjacency list, start=1): 1:[2,3], 2:[4,5], 3:[6], 4:[], 5:[], 6:[]</p>
+    <div class="two-col">
+      <div class="col-card">
+        <div class="col-title dfs">DFS from 1:</div>
+        <ol style="font-size:.88rem;padding-left:18px">
+          <li>Visit 1, push neighbors [2,3]</li>
+          <li>Visit 2 (stack: [3]), push 4,5</li>
+          <li>Visit 4 (stack: [3,5])</li>
+          <li>Visit 5 (stack: [3])</li>
+          <li>Visit 3 (stack: []), push 6</li>
+          <li>Visit 6</li>
+        </ol>
+        <strong style="color:#f0883e">Order: 1,2,4,5,3,6</strong>
+      </div>
+      <div class="col-card">
+        <div class="col-title bfs">BFS from 1:</div>
+        <ol style="font-size:.88rem;padding-left:18px">
+          <li>Enqueue 1. Queue:[1]</li>
+          <li>Dequeue 1, enqueue 2,3. Queue:[2,3]</li>
+          <li>Dequeue 2, enqueue 4,5. Queue:[3,4,5]</li>
+          <li>Dequeue 3, enqueue 6. Queue:[4,5,6]</li>
+          <li>Dequeue 4. Queue:[5,6]</li>
+          <li>Dequeue 5,6.</li>
+        </ol>
+        <strong style="color:#58a6ff">Order: 1,2,3,4,5,6</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Graph: Vertices 0-6. Edges: 0-1, 0-2, 1-3, 1-4, 2-5, 2-6. Do DFS and BFS from vertex 0. List traversal orders.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">DFS(0)</span><span class="step-content">Visit 0 → go to 1 → go to 3 (dead end) ← backtrack → go to 4 (dead end) ← backtrack ← backtrack to 0 → go to 2 → go to 5 (dead end) ← → go to 6<br><strong>DFS Order: 0,1,3,4,2,5,6</strong></span></div>
+        <div class="step"><span class="step-num">BFS(0)</span><span class="step-content">Level 0: {0}<br>Level 1: {1,2} (neighbors of 0)<br>Level 2: {3,4,5,6} (neighbors of 1 and 2)<br><strong>BFS Order: 0,1,2,3,4,5,6</strong></span></div>
+        <div class="answer-box"><strong>✅ DFS: 0,1,3,4,2,5,6 | BFS: 0,1,2,3,4,5,6</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Adjacency matrix given. Vertices: A,B,C,D,E. Edges: A-B, A-C, B-D, C-D, D-E. Perform DFS and BFS from A.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">DFS(A)</span><span class="step-content">A → B (neighbor of A, visit B) → D (neighbor of B) → C (neighbor of D, but check: C was neighbor of A first? In DFS, we go deep: D's neighbors: C,E) → C visited → E → done<br>DFS: A, B, D, C, E</span></div>
+        <div class="step"><span class="step-num">BFS(A)</span><span class="step-content">Queue: [A]. Dequeue A, enqueue B,C. Queue:[B,C]<br>Dequeue B, enqueue D. Queue:[C,D]<br>Dequeue C (D already in queue). Queue:[D]<br>Dequeue D, enqueue E. Queue:[E]<br>Dequeue E.<br>BFS: A, B, C, D, E</span></div>
+        <div class="answer-box"><strong>✅ DFS: A,B,D,C,E | BFS: A,B,C,D,E</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">What data structure does DFS use? What does BFS use? How does this affect the traversal order?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">DFS</span><span class="step-content"><strong>Stack (LIFO)</strong> — Last In, First Out.<br>The most recently discovered neighbor is explored next → goes DEEP before wide.<br>In recursion: the call stack acts as the implicit stack.</span></div>
+        <div class="step"><span class="step-num">BFS</span><span class="step-content"><strong>Queue (FIFO)</strong> — First In, First Out.<br>Neighbors discovered first are explored first → explores level by level, going WIDE before deep.<br>This guarantees shortest path (fewest hops) in unweighted graphs.</span></div>
+        <div class="answer-box"><strong>✅ DFS=Stack (deep first) | BFS=Queue (level by level) | BFS finds shortest path in unweighted graphs</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">Given graph: 1→2, 1→3, 2→4, 3→4, 4→5. Find the BFS shortest path from 1 to 5 and its length.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">BFS</span><span class="step-content">Start from 1. dist[1]=0.<br>Enqueue 1. Dequeue 1 → enqueue 2(dist=1), 3(dist=1).<br>Dequeue 2 → enqueue 4(dist=2).<br>Dequeue 3 → 4 already in queue.<br>Dequeue 4 → enqueue 5(dist=3).<br>Dequeue 5. Found!</span></div>
+        <div class="step"><span class="step-num">Path</span><span class="step-content">Trace parents: 5←4←2←1 or 5←4←3←1<br>Both have length 3 (3 edges).</span></div>
+        <div class="answer-box"><strong>✅ Shortest path: 1→2→4→5 or 1→3→4→5, length = 3 edges</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q5</span>
+        <span class="q-text">Perform DFS on this directed graph and find discovery/finish times. Graph: 1→2, 1→3, 2→4, 3→4, 4→5. Start from vertex 1.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">DFS Trace</span><span class="step-content">Timer starts at 1.<br>Discover 1 (d=1) → discover 2 (d=2) → discover 4 (d=3) → discover 5 (d=4), finish 5 (f=5), finish 4 (f=6), finish 2 (f=7)<br>Back to 1 → discover 3 (d=8) → 4 already visited → finish 3 (f=9), finish 1 (f=10)</span></div>
+        <div class="step"><span class="step-num">Times</span><span class="step-content">1:(1,10), 2:(2,7), 3:(8,9), 4:(3,6), 5:(4,5)</span></div>
+        <div class="answer-box"><strong>✅ Discovery/Finish: 1(1,10), 2(2,7), 3(8,9), 4(3,6), 5(4,5)<br>DFS Order: 1,2,4,5,3</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='12-01-knapsack.html'">← 0/1 Knapsack</button>
+    <button class="nav-btn" onclick="window.location.href='14-principle-optimality.html'">Next: Principle of Optimality →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(13)){d.push(13);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(13)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

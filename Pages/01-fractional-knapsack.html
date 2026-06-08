@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fractional Knapsack | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#f0883e}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.topic-badge{background:rgba(240,136,62,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem;transition:.2s}
+.done-btn:hover{opacity:.85}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9rem;cursor:pointer;border:none;text-decoration:none;transition:.2s}
+.yt-btn:hover{background:#cc0000;transform:translateY(-1px)}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}
+li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:.9em}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px;font-size:.95rem}
+.complexity-table{width:100%;border-collapse:collapse;margin-top:12px}
+.complexity-table th{background:var(--surface2);padding:10px 16px;text-align:left;font-size:.85rem;color:var(--dim);border:1px solid var(--border)}
+.complexity-table td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem}
+.complexity-table tr:hover td{background:rgba(255,255,255,.03)}
+/* Questions */
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem;min-width:24px;text-align:center;transition:.3s}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#f0883e,#e06820);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content;margin-top:2px}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+table.data-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+table.data-table th{background:rgba(240,136,62,.15);color:var(--accent);padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table td{padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table tr:nth-child(even) td{background:rgba(255,255,255,.02)}
+.highlight-row td{background:rgba(240,136,62,.1)!important;color:var(--accent)!important;font-weight:600}
+.formula-box{background:linear-gradient(135deg,rgba(240,136,62,.08),rgba(240,136,62,.03));border:1px solid rgba(240,136,62,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;font-size:1rem;color:#f0883e}
+.tip-box{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#79c0ff}
+.tip-box strong{color:#58a6ff}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:.2s;display:flex;align-items:center;gap:8px}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟠 Greedy Algorithm #1</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+
+<div class="container">
+
+  <div class="hero-section">
+    <div class="hero-icon">🎒</div>
+    <h1 class="hero-title">Fractional Knapsack Problem</h1>
+    <p class="hero-sub">A greedy approach to maximize the value you can carry by taking fractions of items.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Fractional+Knapsack" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <!-- CONCEPT -->
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>You have a knapsack with a <strong>weight capacity W</strong> and a set of <strong>n items</strong>, each with a <em>weight</em> and a <em>value</em>. You want to maximize the total value in the knapsack.</p>
+    <p>In the <strong>Fractional Knapsack</strong>, you <em>can</em> take fractions of items (unlike 0/1 Knapsack). Think of it like filling a bag with liquids — you can pour half a container.</p>
+    <p>The greedy strategy: <strong>always pick the item with the highest value-per-unit-weight</strong> (profit/weight ratio) first. Keep taking until the knapsack is full.</p>
+    <div class="formula-box">Ratio = Value / Weight &nbsp;→&nbsp; Sort by Ratio (descending) → Fill Greedily</div>
+    <div class="tip-box"><strong>💡 Why Greedy works here:</strong> Each unit of weight has an "exchange rate" — profit per kg. Taking the highest exchange rate first always gives the optimal solution. This is provably optimal (exchange argument).</div>
+  </div>
+
+  <!-- KEY POINTS -->
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. Sort items by <strong>value/weight ratio in descending order</strong>.</div>
+    <div class="key-point">2. Take items one by one — if item fits completely, take it. Otherwise take the fraction that fills remaining capacity.</div>
+    <div class="key-point">3. Stop when knapsack is full (remaining capacity = 0).</div>
+    <div class="key-point">4. Greedy gives the <strong>optimal solution</strong> for fractional version.</div>
+    <div class="key-point">5. Time Complexity: <code>O(n log n)</code> for sorting + <code>O(n)</code> for filling = <strong>O(n log n)</strong>.</div>
+    <div class="key-point">6. Space Complexity: <code>O(1)</code> extra (in-place).</div>
+    <div class="key-point">7. Greedy does <strong>NOT</strong> work for 0/1 Knapsack — use DP for that.</div>
+    <table class="complexity-table">
+      <tr><th>Operation</th><th>Complexity</th></tr>
+      <tr><td>Sorting by ratio</td><td>O(n log n)</td></tr>
+      <tr><td>Filling knapsack</td><td>O(n)</td></tr>
+      <tr><td>Overall</td><td><strong>O(n log n)</strong></td></tr>
+      <tr><td>Space</td><td>O(1)</td></tr>
+    </table>
+  </div>
+
+  <!-- WORKED EXAMPLE -->
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p><strong>Given:</strong> Capacity W = 50 kg, 5 items:</p>
+    <table class="data-table">
+      <tr><th>Item</th><th>Weight (kg)</th><th>Value ($)</th><th>Ratio (V/W)</th></tr>
+      <tr><td>1</td><td>10</td><td>60</td><td>6.0</td></tr>
+      <tr><td>2</td><td>20</td><td>100</td><td>5.0</td></tr>
+      <tr><td>3</td><td>30</td><td>120</td><td>4.0</td></tr>
+      <tr><td>4</td><td>15</td><td>45</td><td>3.0</td></tr>
+      <tr><td>5</td><td>25</td><td>75</td><td>3.0</td></tr>
+    </table>
+    <p style="margin-top:12px"><strong>Sorted by ratio:</strong> Item1(6) → Item2(5) → Item3(4) → Item4=Item5(3)</p>
+    <p><strong>Filling:</strong></p>
+    <ul>
+      <li>Take Item1 fully: weight used = 10, value = 60, remaining = 40</li>
+      <li>Take Item2 fully: weight used = 20, value = 100, remaining = 20</li>
+      <li>Take Item3 partially: 20/30 fraction → value = 120×(20/30) = 80, remaining = 0</li>
+    </ul>
+    <div class="answer-box"><strong>✅ Maximum Value = 60 + 100 + 80 = $240</strong></div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Knapsack capacity = 15 kg. Items: A(2kg,$10), B(3kg,$5), C(5kg,$15), D(7kg,$7), E(1kg,$6). Find the maximum profit using fractional knapsack.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Calculate ratio for each item:<br>A: 10/2 = <strong>5.0</strong> | B: 5/3 = 1.67 | C: 15/5 = <strong>3.0</strong> | D: 7/7 = 1.0 | E: 6/1 = <strong>6.0</strong></span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Sort by ratio descending:<br>E(6.0) → A(5.0) → C(3.0) → B(1.67) → D(1.0)</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Fill greedily (capacity=15):<br>• Take E: 1kg → value=6, remaining=14<br>• Take A: 2kg → value=10, remaining=12<br>• Take C: 5kg → value=15, remaining=7<br>• Take B: 3kg → value=5, remaining=4<br>• Take D partially: 4/7 fraction → value = 7×(4/7) = 4, remaining=0</span></div>
+        <div class="answer-box"><strong>✅ Max Profit = 6 + 10 + 15 + 5 + 4 = $40</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">W = 60. Items: (10,$120), (20,$60), (30,$100). Apply fractional knapsack and find max value.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Calculate ratios:<br>Item1: 120/10 = <strong>12</strong> | Item2: 60/20 = <strong>3</strong> | Item3: 100/30 = <strong>3.33</strong></span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Sorted: Item1(12) → Item3(3.33) → Item2(3)</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Fill (capacity=60):<br>• Item1: 10kg → value=120, remaining=50<br>• Item3: 30kg → value=100, remaining=20<br>• Item2: 20kg → value=60, remaining=0</span></div>
+        <div class="answer-box"><strong>✅ Max Value = 120 + 100 + 60 = $280</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">W = 50. Items: (10,$60), (40,$40), (20,$100), (30,$120). Find maximum value. (Classic Abdul Bari example)</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Ratios: (10kg,60$)=6.0 | (40kg,40$)=1.0 | (20kg,100$)=5.0 | (30kg,120$)=4.0</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Sorted: 6.0 → 5.0 → 4.0 → 1.0</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Fill (capacity=50):<br>• Item(10kg): value=60, remaining=40<br>• Item(20kg): value=100, remaining=20<br>• Item(30kg) partially: 20/30 → value=120×(2/3)=80, remaining=0</span></div>
+        <div class="answer-box"><strong>✅ Max Value = 60 + 100 + 80 = $240</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">W = 20 kg. Items: (18kg,$25), (15kg,$24), (10kg,$15). Find max profit. Note: ratios are very close — careful sorting!</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Ratios: 25/18=1.39 | 24/15=1.60 | 15/10=1.50</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Sorted: 1.60 → 1.50 → 1.39<br>(15kg item) → (10kg item) → (18kg item)</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Fill (capacity=20):<br>• (15kg,$24): value=24, remaining=5<br>• (10kg,$15) partially: 5/10 → value=15×0.5=7.5, remaining=0</span></div>
+        <div class="answer-box"><strong>✅ Max Profit = 24 + 7.5 = $31.5</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q5</span>
+        <span class="q-text">Explain why greedy fails for 0/1 Knapsack. Give a counter-example with W=10, items: (6,$6), (5,$5), (5,$5).</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Ratios: (6kg,$6)=1.0 | (5kg,$5)=1.0 | (5kg,$5)=1.0 — all equal.<br>Greedy picks first item (6kg,$6), leaving 4kg. Can't fit any other item.<br>Greedy result = <strong>$6</strong></span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Optimal 0/1: Skip 6kg item, take both 5kg items: 10kg total.<br>Optimal result = <strong>$10</strong></span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">In 0/1 Knapsack, you cannot break items. A locally good choice (high ratio) may block better combinations. Greedy ≠ optimal for 0/1.</span></div>
+        <div class="answer-box"><strong>✅ Greedy gives $6 but optimal is $10 — hence DP is needed for 0/1 Knapsack.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='../index.html'">🏠 Back to Home</button>
+    <button class="nav-btn" onclick="window.location.href='02-job-sequencing.html'">Next: Job Sequencing →</button>
+  </div>
+</div>
+
+<script>
+function toggle(header){
+  const sol=header.nextElementSibling;
+  const arrow=header.querySelector('.q-toggle');
+  sol.classList.toggle('open');
+  arrow.textContent=sol.classList.contains('open')?'▲':'▼';
+}
+function markDone(){
+  const done=JSON.parse(localStorage.getItem('algoDone')||'[]');
+  if(!done.includes(1)){done.push(1);localStorage.setItem('algoDone',JSON.stringify(done));}
+  document.getElementById('doneBtn').textContent='✅ Completed!';
+  document.getElementById('doneBtn').classList.add('marked');
+}
+const done=JSON.parse(localStorage.getItem('algoDone')||'[]');
+if(done.includes(1)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

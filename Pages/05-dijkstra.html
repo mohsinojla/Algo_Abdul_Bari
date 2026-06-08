@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dijkstra's Algorithm | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#3fb950}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.topic-badge{background:rgba(63,185,80,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#58a6ff;color:#000}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.complexity-table{width:100%;border-collapse:collapse;margin-top:12px}
+.complexity-table th{background:var(--surface2);padding:10px 16px;text-align:left;font-size:.85rem;color:var(--dim);border:1px solid var(--border)}
+.complexity-table td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#3fb950,#2ea043);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+table.data-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.85rem}
+table.data-table th{background:rgba(63,185,80,.15);color:var(--accent);padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table td{padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table tr.visited td{background:rgba(63,185,80,.08);color:#3fb950}
+.formula-box{background:linear-gradient(135deg,rgba(63,185,80,.08),rgba(63,185,80,.03));border:1px solid rgba(63,185,80,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#3fb950}
+.tip-box{background:rgba(255,123,114,.08);border:1px solid rgba(255,123,114,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#ff7b72}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟢 Graph Algorithm #5</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🗺️</div>
+    <h1 class="hero-title">Dijkstra's Algorithm</h1>
+    <p class="hero-sub">Find shortest paths from a single source to all vertices in a weighted graph.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Dijkstra+Algorithm" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>Dijkstra's algorithm finds the <strong>shortest path from a source vertex to all other vertices</strong> in a graph with <strong>non-negative edge weights</strong>.</p>
+    <p><strong>Algorithm:</strong></p>
+    <ol>
+      <li>Initialize: dist[source]=0, dist[all others]=∞.</li>
+      <li>Use a <strong>visited set</strong>. Repeat until all vertices visited:</li>
+      <li>Pick the unvisited vertex with <strong>minimum distance</strong> (greedy choice).</li>
+      <li><strong>Relax</strong> all edges: if dist[u] + weight(u,v) &lt; dist[v], update dist[v].</li>
+      <li>Mark u as visited.</li>
+    </ol>
+    <div class="formula-box">Relaxation: dist[v] = min(dist[v], dist[u] + w(u,v))</div>
+    <div class="tip-box"><strong>⚠️ Important:</strong> Dijkstra FAILS with NEGATIVE edge weights. Use Bellman-Ford for negative edges.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. Works only with <strong>non-negative edge weights</strong>.</div>
+    <div class="key-point">2. Greedy — always processes the <strong>minimum distance unvisited</strong> vertex next.</div>
+    <div class="key-point">3. Once a vertex is <strong>visited/finalized</strong>, its distance never changes.</div>
+    <div class="key-point">4. Time: <code>O(V²)</code> with adjacency matrix, <code>O((V+E) log V)</code> with priority queue.</div>
+    <div class="key-point">5. Produces a <strong>shortest path tree</strong> from source.</div>
+    <div class="key-point">6. Can find the actual path by maintaining a <strong>parent/predecessor array</strong>.</div>
+    <table class="complexity-table">
+      <tr><th>Implementation</th><th>Time</th><th>Space</th></tr>
+      <tr><td>Adjacency Matrix</td><td>O(V²)</td><td>O(V²)</td></tr>
+      <tr><td>Priority Queue</td><td>O((V+E) log V)</td><td>O(V+E)</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p>Graph (source = A): A-B(4), A-C(2), B-C(1), B-D(5), C-D(8), C-E(10), D-E(2)</p>
+    <p><strong>Initial dist:</strong> A=0, B=∞, C=∞, D=∞, E=∞</p>
+    <table class="data-table">
+      <tr><th>Step</th><th>Visit</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th></tr>
+      <tr><td>0</td><td>-</td><td>0</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td></tr>
+      <tr class="visited"><td>1</td><td>A(0)</td><td>0✓</td><td>4</td><td>2</td><td>∞</td><td>∞</td></tr>
+      <tr class="visited"><td>2</td><td>C(2)</td><td>0✓</td><td>3</td><td>2✓</td><td>10</td><td>12</td></tr>
+      <tr class="visited"><td>3</td><td>B(3)</td><td>0✓</td><td>3✓</td><td>2✓</td><td>8</td><td>12</td></tr>
+      <tr class="visited"><td>4</td><td>D(8)</td><td>0✓</td><td>3✓</td><td>2✓</td><td>8✓</td><td>10</td></tr>
+      <tr class="visited"><td>5</td><td>E(10)</td><td>0✓</td><td>3✓</td><td>2✓</td><td>8✓</td><td>10✓</td></tr>
+    </table>
+    <div class="answer-box"><strong>✅ Shortest distances from A: B=3, C=2, D=8, E=10</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Graph with 5 vertices. Adjacency matrix (∞ = no edge, source = vertex 1):<br>
+        1→2:10, 1→3:3, 2→3:1, 2→4:2, 3→2:4, 3→4:8, 3→5:2, 4→5:5, 5→4:1.<br>Find shortest distances from vertex 1.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Init: dist=[0,∞,∞,∞,∞], unvisited={1,2,3,4,5}</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Visit 1(dist=0): relax neighbors:<br>dist[2]=min(∞,0+10)=10, dist[3]=min(∞,0+3)=3</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Visit 3(dist=3, min unvisited): relax:<br>dist[2]=min(10,3+4)=7, dist[4]=min(∞,3+8)=11, dist[5]=min(∞,3+2)=5</span></div>
+        <div class="step"><span class="step-num">Step 4</span><span class="step-content">Visit 5(dist=5): relax: dist[4]=min(11,5+1)=6</span></div>
+        <div class="step"><span class="step-num">Step 5</span><span class="step-content">Visit 4(dist=6): no improvement to others<br>Visit 2(dist=7): dist[4]=min(6,7+2)=6 (no change)</span></div>
+        <div class="answer-box"><strong>✅ Shortest paths from 1: to 2=7, to 3=3, to 4=6, to 5=5</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Weighted graph: A-B(1), A-C(4), B-C(2), B-D(5), C-D(1). Find shortest path from A to D and the actual path.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">dist: A=0, B=∞, C=∞, D=∞. Parent: all=null</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Visit A: dist[B]=1(parent=A), dist[C]=4(parent=A)</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Visit B(1): dist[C]=min(4,1+2)=3(parent=B), dist[D]=min(∞,1+5)=6(parent=B)</span></div>
+        <div class="step"><span class="step-num">Step 4</span><span class="step-content">Visit C(3): dist[D]=min(6,3+1)=4(parent=C)</span></div>
+        <div class="step"><span class="step-num">Step 5</span><span class="step-content">Visit D(4). Done.<br>Path to D: D←C←B←A → A→B→C→D</span></div>
+        <div class="answer-box"><strong>✅ Shortest path A→D = 4, via A→B→C→D</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">Why does Dijkstra fail with negative edges? Give a small counter-example.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Reason</span><span class="step-content">Dijkstra assumes: once a vertex is finalized (visited), its shortest distance is permanently set. With negative edges, a later path could DECREASE an already-finalized distance — violating the greedy assumption.</span></div>
+        <div class="step"><span class="step-num">Example</span><span class="step-content">Graph: A→B(1), A→C(3), C→B(-3)<br>Dijkstra: Visit A→B(1) finalized. Visit C(3). C→B would give 3+(-3)=0 < 1 but B is already finalized!<br>Dijkstra gives dist[B]=1 but correct answer is 0.</span></div>
+        <div class="answer-box"><strong>✅ Use Bellman-Ford for graphs with negative edges!</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">Graph: 1-2(2), 1-3(6), 2-3(3), 2-4(8), 3-4(7), 3-5(5), 4-5(1), 4-6(5), 5-6(8). Find all shortest distances from vertex 1.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Init: dist[1]=0, rest=∞</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Visit 1: dist[2]=2, dist[3]=6<br>Visit 2(2): dist[3]=min(6,2+3)=5, dist[4]=min(∞,2+8)=10<br>Visit 3(5): dist[4]=min(10,5+7)=10(no change), dist[5]=min(∞,5+5)=10<br>Visit 4(10): dist[5]=min(10,10+1)=10(no change), dist[6]=min(∞,10+5)=15<br>Visit 5(10): dist[6]=min(15,10+8)=15(no change)<br>Visit 6(15).</span></div>
+        <div class="answer-box"><strong>✅ Distances: 2→2, 3→5, 4→10, 5→10, 6→15</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='04-optimal-merge.html'">← Optimal Merge</button>
+    <button class="nav-btn" onclick="window.location.href='06-dp-tabulation.html'">Next: DP Tabulation →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(5)){d.push(5);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(5)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

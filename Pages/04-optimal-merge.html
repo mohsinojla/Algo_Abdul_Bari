@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimal Merge Pattern | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#f0883e}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.topic-badge{background:rgba(240,136,62,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#f0883e,#e06820);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.formula-box{background:linear-gradient(135deg,rgba(240,136,62,.08),rgba(240,136,62,.03));border:1px solid rgba(240,136,62,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#f0883e}
+.tip-box{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#79c0ff}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟠 Greedy Algorithm #4</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🔀</div>
+    <h1 class="hero-title">Optimal Merge Pattern</h1>
+    <p class="hero-sub">Minimize total comparisons when merging sorted files using a greedy min-heap approach.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Optimal+Merge+Pattern" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>You have <strong>n sorted files</strong> of different sizes. When you merge two files of sizes m and n, the cost is <strong>m + n</strong> (number of comparisons/operations). You want to merge all files into one with <strong>minimum total cost</strong>.</p>
+    <p>This is essentially the same as Huffman coding — use a <strong>min-heap</strong> and always merge the two <em>smallest</em> files first.</p>
+    <div class="formula-box">Cost of merging = size1 + size2 | Always merge two smallest → Min Total Cost</div>
+    <div class="tip-box"><strong>💡 Intuition:</strong> Small files merged early get "added" into sums multiple times. Merging small files first minimizes how many times large values are included in sums.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. Use a <strong>min-priority queue (min-heap)</strong>.</div>
+    <div class="key-point">2. Each merge costs = <strong>sum of two merged files</strong>.</div>
+    <div class="key-point">3. Repeat n-1 times (each merge reduces file count by 1).</div>
+    <div class="key-point">4. Total cost = sum of all intermediate merge costs.</div>
+    <div class="key-point">5. This gives the <strong>minimum total number of record moves</strong>.</div>
+    <div class="key-point">6. Same algorithm as Huffman — just different interpretation.</div>
+    <div class="key-point">7. Time complexity: <code>O(n log n)</code>.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p>Files of sizes: {2, 3, 4, 5, 6, 7}</p>
+    <ol>
+      <li>Merge 2+3 = 5, cost=5. Heap: {4,5,5,6,7}</li>
+      <li>Merge 4+5 = 9, cost=9. Heap: {5,6,7,9}</li>
+      <li>Merge 5+6 = 11, cost=11. Heap: {7,9,11}</li>
+      <li>Merge 7+9 = 16, cost=16. Heap: {11,16}</li>
+      <li>Merge 11+16 = 27, cost=27. Done.</li>
+    </ol>
+    <div class="answer-box"><strong>✅ Total Cost = 5+9+11+16+27 = 68</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Find the optimal merge cost for files: {5, 10, 20, 30, 40}.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Min-heap: {5,10,20,30,40}</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Merge 5+10=15, cost=15. Heap:{15,20,30,40}<br>Merge 15+20=35, cost=35. Heap:{30,35,40}<br>Merge 30+35=65, cost=65. Heap:{40,65}<br>Merge 40+65=105, cost=105.</span></div>
+        <div class="answer-box"><strong>✅ Total = 15+35+65+105 = 220</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Files: {2, 3, 4, 5, 6, 7}. What is the minimum cost to merge all files?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Merge 2+3=5(cost 5). Heap:{4,5,5,6,7}<br>Merge 4+5=9(cost 9). Heap:{5,6,7,9}<br>Merge 5+6=11(cost 11). Heap:{7,9,11}<br>Merge 7+9=16(cost 16). Heap:{11,16}<br>Merge 11+16=27(cost 27).</span></div>
+        <div class="answer-box"><strong>✅ Total = 5+9+11+16+27 = 68</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">3 files of sizes: {10, 20, 30}. Compare cost of merging in order (10+20 first) vs (20+30 first) vs optimal.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Option A</span><span class="step-content">10+20=30, then 30+30=60. Total = 30+60 = 90</span></div>
+        <div class="step"><span class="step-num">Option B</span><span class="step-content">20+30=50, then 10+50=60. Total = 50+60 = 110</span></div>
+        <div class="step"><span class="step-num">Optimal</span><span class="step-content">Min-heap: merge 10+20=30 first (smallest two), then 30+30=60. Total = 90 ✓</span></div>
+        <div class="answer-box"><strong>✅ Optimal cost = 90 (merge smallest pair first)</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">Files: {1, 2, 3, 4, 5}. Find optimal merge cost.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Merge 1+2=3(cost 3). Heap:{3,3,4,5}<br>Merge 3+3=6(cost 6). Heap:{4,5,6}<br>Merge 4+5=9(cost 9). Heap:{6,9}<br>Merge 6+9=15(cost 15).</span></div>
+        <div class="answer-box"><strong>✅ Total = 3+6+9+15 = 33</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='03-huffman-encoding.html'">← Huffman Encoding</button>
+    <button class="nav-btn" onclick="window.location.href='05-dijkstra.html'">Next: Dijkstra's →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(4)){d.push(4);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(4)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

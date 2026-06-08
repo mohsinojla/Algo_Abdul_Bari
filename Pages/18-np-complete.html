@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NP-Hard & NP-Complete | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#bc8cff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(188,140,255,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.complexity-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:16px 0}
+.cx-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.cx-title{font-weight:700;margin-bottom:8px;font-size:.95rem}
+.venn-diagram{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-size:.88rem;color:#c9d1d9}
+.venn-inner{width:80%;margin:0 auto;position:relative}
+.v-outer{background:rgba(188,140,255,.08);border:2px solid rgba(188,140,255,.5);border-radius:12px;padding:20px;margin-bottom:-30px}
+.v-middle{background:rgba(88,166,255,.1);border:2px solid rgba(88,166,255,.5);border-radius:10px;padding:16px;margin:0 20px;margin-bottom:-20px}
+.v-inner{background:rgba(63,185,80,.15);border:2px solid rgba(63,185,80,.6);border-radius:8px;padding:12px;margin:0 30px}
+.v-label{font-weight:700;font-size:.9rem;margin-bottom:6px}
+.v-outer .v-label{color:var(--accent)}
+.v-middle .v-label{color:#58a6ff}
+.v-inner .v-label{color:#3fb950}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#bc8cff,#9a5fff);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.example-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0}
+.example-box h4{color:var(--accent);margin-bottom:8px}
+.clique-diagram{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;font-family:monospace;font-size:.85rem;color:#c9d1d9;margin:12px 0;line-height:1.8}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟣 Theory #18 — Final Topic!</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🧠</div>
+    <h1 class="hero-title">NP-Hard & NP-Complete Problems</h1>
+    <p class="hero-sub">Understanding computational complexity classes and the Clique Decision Problem.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+NP+Hard+NP+Complete" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Complexity Classes Overview</div>
+    <div class="venn-diagram">
+      <div class="venn-inner">
+        <div class="v-outer">
+          <div class="v-label">NP-Hard</div>
+          <div style="font-size:.8rem;color:var(--dim)">At least as hard as hardest NP problems. May not be in NP.</div>
+          <div class="v-middle">
+            <div class="v-label">NP (Non-deterministic Polynomial)</div>
+            <div style="font-size:.8rem;color:var(--dim)">Solutions verifiable in polynomial time.</div>
+            <div class="v-inner">
+              <div class="v-label">P (Polynomial)</div>
+              <div style="font-size:.8rem;color:#7ee787">Solvable in polynomial time. P ⊆ NP ⊆ NP-Hard</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="margin-top:16px;font-size:.82rem">NP-Complete = NP ∩ NP-Hard (hardest problems in NP)</p>
+    </div>
+
+    <div class="complexity-grid">
+      <div class="cx-card">
+        <div class="cx-title" style="color:#3fb950">P (Polynomial)</div>
+        <ul style="font-size:.85rem">
+          <li>Solvable in O(nᵏ) time</li>
+          <li>Examples: Sorting, BFS, Dijkstra, LCS</li>
+          <li>Tractable problems</li>
+        </ul>
+      </div>
+      <div class="cx-card">
+        <div class="cx-title" style="color:#58a6ff">NP (Nondeterministic Poly)</div>
+        <ul style="font-size:.85rem">
+          <li>Solution verifiable in poly time</li>
+          <li>May or may not be solvable in poly time</li>
+          <li>P ⊆ NP (all P problems are in NP)</li>
+        </ul>
+      </div>
+      <div class="cx-card">
+        <div class="cx-title" style="color:#f0883e">NP-Complete</div>
+        <ul style="font-size:.85rem">
+          <li>In NP + NP-Hard</li>
+          <li>Every NP problem reduces to it</li>
+          <li>Examples: SAT, Clique, Vertex Cover, TSP decision</li>
+          <li>Solve one → solve all NP</li>
+        </ul>
+      </div>
+      <div class="cx-card">
+        <div class="cx-title" style="color:var(--accent)">NP-Hard</div>
+        <ul style="font-size:.85rem">
+          <li>At least as hard as NP-Complete</li>
+          <li>May not be in NP (not necessarily decidable)</li>
+          <li>Examples: TSP optimization, Halting Problem</li>
+          <li>No known poly-time solution</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. <strong>P vs NP question:</strong> Does P = NP? The greatest unsolved problem in CS. ($1M prize!)</div>
+    <div class="key-point">2. <strong>Reduction:</strong> Problem A reduces to B (A ≤p B) means: if we can solve B, we can solve A.</div>
+    <div class="key-point">3. To prove NP-Complete: (1) Show it's IN NP (verifiable in poly time). (2) Show an NP-Complete problem reduces to it.</div>
+    <div class="key-point">4. <strong>First NP-Complete problem:</strong> SAT (Boolean Satisfiability) — Cook's Theorem (1971).</div>
+    <div class="key-point">5. NP-Complete implies: No poly-time algorithm known, but solution can be verified quickly.</div>
+    <div class="key-point">6. For NP problems in practice: use approximation algorithms, heuristics, or exact algorithms for small n.</div>
+    <div class="key-point">7. <strong>Clique problem</strong> is NP-Complete (proved by reducing from SAT or 3-SAT).</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🕸️ Clique Decision Problem</div>
+    <p>A <strong>clique</strong> in a graph is a subset of vertices where <strong>every pair is connected by an edge</strong> (complete subgraph).</p>
+    <p><strong>Clique Decision Problem (CDP):</strong> "Does graph G contain a clique of size k?"</p>
+    <div class="clique-diagram">
+Graph G:
+  1 --- 2
+  |\ /|
+  | X |
+  |/ \|
+  4 --- 3
+  (all 6 edges present: 1-2, 1-3, 1-4, 2-3, 2-4, 3-4)
+
+This is a 4-CLIQUE (K₄): all 4 vertices are pairwise connected.
+
+Smaller example:
+  1 --- 2 --- 3
+        |
+        4
+Clique of size 2: {1,2}, {2,3}, {2,4}
+Clique of size 3: {1,2,3}? Check: 1-2 ✓, 2-3 ✓, 1-3? ✗ → NOT a clique
+    </div>
+    <p><strong>Why NP-Complete?</strong></p>
+    <ul>
+      <li><strong>In NP:</strong> Given a clique candidate, verify in O(k²) — just check all edges.</li>
+      <li><strong>NP-Hard:</strong> 3-SAT ≤p Clique (polynomial reduction exists — proved by Cook/Karp).</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Define P, NP, NP-Hard, and NP-Complete. Give one example of each.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">P</span><span class="step-content"><strong>P:</strong> Problems solvable in polynomial time O(nᵏ).<br>Example: Sorting (O(n log n)), Shortest Path (Dijkstra O(V²))</span></div>
+        <div class="step"><span class="step-num">NP</span><span class="step-content"><strong>NP:</strong> Problems where a given solution can be VERIFIED in polynomial time.<br>Example: Hamiltonian Cycle — can verify a proposed cycle in O(V)</span></div>
+        <div class="step"><span class="step-num">NP-Hard</span><span class="step-content"><strong>NP-Hard:</strong> At least as hard as any NP problem. Every NP problem reduces to it.<br>Example: TSP optimization problem, Halting Problem</span></div>
+        <div class="step"><span class="step-num">NP-Complete</span><span class="step-content"><strong>NP-Complete:</strong> Both in NP AND NP-Hard. Hardest problems in NP.<br>Example: Clique decision, SAT, Vertex Cover, 3-Coloring</span></div>
+        <div class="answer-box"><strong>✅ P⊆NP. NP-Complete = NP ∩ NP-Hard. If any NP-Complete problem is solvable in poly time → P=NP.</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Find all cliques in this graph: vertices {1,2,3,4,5}, edges: {1-2,1-3,2-3,3-4,4-5,3-5}. What is the maximum clique size?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Check</span><span class="step-content">Cliques of size 2 (every edge): {1,2},{1,3},{2,3},{3,4},{4,5},{3,5} — all are 2-cliques.</span></div>
+        <div class="step"><span class="step-num">Size 3</span><span class="step-content">Check {1,2,3}: 1-2✓, 1-3✓, 2-3✓ → YES! 3-clique!<br>Check {3,4,5}: 3-4✓, 4-5✓, 3-5✓ → YES! 3-clique!<br>Check {1,2,4}: 1-2✓, 1-4? No edge → not a clique<br>Check {1,3,5}: 1-3✓, 3-5✓, 1-5? No → not a clique</span></div>
+        <div class="step"><span class="step-num">Size 4</span><span class="step-content">Check {1,2,3,4}: need 1-4,2-4 → no edges → not a clique<br>Check {1,2,3,5}: need 1-5,2-5 → no → not a clique<br>No 4-clique exists.</span></div>
+        <div class="answer-box"><strong>✅ Maximum clique size = 3. Two max cliques: {1,2,3} and {3,4,5}</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">How do you prove a problem is NP-Complete? Explain the two conditions with the Clique problem as example.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Condition 1</span><span class="step-content"><strong>Show the problem is in NP:</strong> Given a certificate (candidate solution), verify it in polynomial time.<br>For Clique: Given a set S of vertices as candidate clique, check if |S|=k and all pairs in S are connected. This takes O(k²) = polynomial → Clique is in NP ✓</span></div>
+        <div class="step"><span class="step-num">Condition 2</span><span class="step-content"><strong>Show it's NP-Hard:</strong> Reduce a known NP-Complete problem to it in polynomial time.<br>For Clique: 3-SAT ≤p Clique (Karp reduction, 1972). For each 3-SAT formula with k clauses, construct a graph G such that G has a k-clique iff the formula is satisfiable. This reduction is polynomial.</span></div>
+        <div class="step"><span class="step-num">Conclusion</span><span class="step-content">Clique ∈ NP (condition 1) + Clique ∈ NP-Hard (condition 2) → Clique is NP-Complete!</span></div>
+        <div class="answer-box"><strong>✅ To prove NP-Complete: (1) In NP: verifiable in poly time. (2) NP-Hard: known NP-C problem reduces to it.</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">What is the difference between NP-Hard and NP-Complete? Is TSP NP-Hard or NP-Complete? Explain.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Difference</span><span class="step-content">NP-Hard: At least as hard as any NP problem. NOT required to be in NP.<br>NP-Complete: Must be BOTH in NP (verifiable in poly time) AND NP-Hard.<br>So: NP-Complete ⊂ NP-Hard. Every NP-Complete is NP-Hard, but not vice versa.</span></div>
+        <div class="step"><span class="step-num">TSP</span><span class="step-content">TSP has two versions:<br>1. <strong>TSP Decision:</strong> "Is there a tour with cost ≤ k?" → NP-Complete (in NP: verify tour, AND 3-SAT reduces to it)<br>2. <strong>TSP Optimization:</strong> "Find minimum cost tour" → NP-Hard (not obviously in NP since verifying optimality is hard)</span></div>
+        <div class="answer-box"><strong>✅ TSP Decision = NP-Complete. TSP Optimization = NP-Hard. All NP-Complete problems are NP-Hard but not the reverse.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINAL COMPLETION -->
+  <div style="background:linear-gradient(135deg,rgba(188,140,255,.1),rgba(88,166,255,.05));border:1px solid rgba(188,140,255,.3);border-radius:14px;padding:28px;text-align:center;margin-bottom:28px">
+    <div style="font-size:3rem;margin-bottom:12px">🎉</div>
+    <h2 style="font-size:1.5rem;margin-bottom:10px">You've Covered All 18 Topics!</h2>
+    <p style="color:var(--dim)">Go back home, mark this as done, and review any topics you're less confident about. You've got this — good luck on your exam!</p>
+    <button onclick="window.location.href='../index.html'" style="background:linear-gradient(135deg,#bc8cff,#58a6ff);color:#000;border:none;padding:12px 32px;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;margin-top:16px">🏠 Back to Home Dashboard</button>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='17-optimal-bst.html'">← Optimal BST</button>
+    <button class="nav-btn" onclick="window.location.href='../index.html'">🏠 Home</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(18)){d.push(18);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(18)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

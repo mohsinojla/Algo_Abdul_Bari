@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bellman-Ford | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#3fb950}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(63,185,80,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#58a6ff;color:#000}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.complexity-table{width:100%;border-collapse:collapse;margin-top:12px}
+.complexity-table th{background:var(--surface2);padding:10px 16px;text-align:left;font-size:.85rem;color:var(--dim);border:1px solid var(--border)}
+.complexity-table td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#3fb950,#2ea043);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+table.data-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.85rem}
+table.data-table th{background:rgba(63,185,80,.15);color:var(--accent);padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table td{padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table td.updated{background:rgba(63,185,80,.15);color:#3fb950;font-weight:700}
+.formula-box{background:linear-gradient(135deg,rgba(63,185,80,.08),rgba(63,185,80,.03));border:1px solid rgba(63,185,80,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#3fb950}
+.tip-box{background:rgba(255,123,114,.08);border:1px solid rgba(255,123,114,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#ff7b72}
+.compare-box{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:16px 0}
+.compare-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:.85rem}
+.compare-card h4{margin-bottom:8px;font-size:.9rem}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟢 Graph Algorithm #9</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">⚡</div>
+    <h1 class="hero-title">Bellman-Ford Algorithm</h1>
+    <p class="hero-sub">Single-source shortest paths that handles negative edge weights and detects negative cycles.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Bellman+Ford+Algorithm" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>Bellman-Ford finds the <strong>shortest path from one source</strong> to all other vertices. Unlike Dijkstra, it handles <strong>negative edge weights</strong> and can <strong>detect negative cycles</strong>.</p>
+    <p><strong>Algorithm:</strong></p>
+    <ol>
+      <li>Initialize: dist[source]=0, dist[all others]=∞.</li>
+      <li>Repeat <strong>V-1 times</strong>: Relax ALL edges — for each edge (u,v,w): if dist[u]+w &lt; dist[v], update dist[v].</li>
+      <li><strong>Negative cycle check:</strong> Do one more relaxation pass. If any distance still decreases → negative cycle exists.</li>
+    </ol>
+    <div class="formula-box">Relax: if dist[u] + w(u,v) &lt; dist[v] → dist[v] = dist[u] + w(u,v) | Repeat V-1 times</div>
+    <div class="tip-box"><strong>⚠️ Why V-1 iterations?</strong> A shortest path with no negative cycles has at most V-1 edges. After k iterations, all shortest paths with ≤k edges are found.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. Relax <strong>ALL E edges</strong> in each of V-1 iterations.</div>
+    <div class="key-point">2. Time: <code>O(V × E)</code> — slower than Dijkstra but handles negatives.</div>
+    <div class="key-point">3. If after V-1 iterations, doing one more relaxation still updates → <strong>negative cycle detected</strong>.</div>
+    <div class="key-point">4. Works on both directed and undirected graphs.</div>
+    <div class="key-point">5. Space: <code>O(V)</code> for distance array.</div>
+    <div class="compare-box">
+      <div class="compare-card"><h4 style="color:#58a6ff">Dijkstra</h4>Greedy, O(V²)<br>No negative edges<br>Fast, efficient</div>
+      <div class="compare-card"><h4 style="color:#3fb950">Bellman-Ford</h4>DP, O(VE)<br>Handles negatives<br>Detects neg cycles</div>
+      <div class="compare-card"><h4 style="color:#f0883e">Floyd-Warshall</h4>DP, O(V³)<br>All-pairs<br>Handles negatives</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p>Graph (source=A): A→B(6), A→C(7), B→C(8), B→D(-4), B→E(5), C→E(-3), D→A(2), D→F(9), E→D(7), F→B(-2)</p>
+    <p>Vertices: A,B,C,D,E,F (6 vertices → 5 iterations)</p>
+    <table class="data-table">
+      <tr><th>Iteration</th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>
+      <tr><td>Initial</td><td>0</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td><td>∞</td></tr>
+      <tr><td>1</td><td>0</td><td class="updated">6</td><td class="updated">7</td><td>∞</td><td>∞</td><td>∞</td></tr>
+      <tr><td>2</td><td>0</td><td>6</td><td>7</td><td class="updated">2</td><td class="updated">4</td><td>∞</td></tr>
+      <tr><td>3</td><td>0</td><td>6</td><td>7</td><td class="updated">-2</td><td>4</td><td class="updated">11</td></tr>
+      <tr><td>4</td><td>0</td><td>6</td><td>7</td><td>-2</td><td>4</td><td class="updated">7</td></tr>
+      <tr><td>5</td><td>0</td><td class="updated">5</td><td>7</td><td>-2</td><td>4</td><td>7</td></tr>
+    </table>
+    <div class="answer-box"><strong>✅ Shortest distances from A: B=5, C=7, D=-2, E=4, F=7</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Graph (source=0): Edges: (0,1,4),(0,2,5),(1,2,-3),(2,3,4),(1,3,10). Run Bellman-Ford, find shortest distances.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Init</span><span class="step-content">dist=[0,∞,∞,∞]</span></div>
+        <div class="step"><span class="step-num">Pass 1</span><span class="step-content">Edge(0,1,4): dist[1]=min(∞,0+4)=4<br>Edge(0,2,5): dist[2]=min(∞,0+5)=5<br>Edge(1,2,-3): dist[2]=min(5,4+(-3))=1 ✓<br>Edge(2,3,4): dist[3]=min(∞,1+4)=5<br>Edge(1,3,10): dist[3]=min(5,4+10)=5 (no change)</span></div>
+        <div class="step"><span class="step-num">Pass 2</span><span class="step-content">Re-relax all edges: no improvements. Already converged after pass 1.</span></div>
+        <div class="answer-box"><strong>✅ dist = [0, 4, 1, 5] | Path to 3: 0→1→2→3</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Graph: 5 vertices (s,a,b,c,t). Edges: s→a(10), s→c(3), a→b(2), c→a(4), c→d(8), c→b(6), d→b(-5), b→t(1), d→t(8). Source=s. Find shortest paths.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Init</span><span class="step-content">dist: s=0, a=∞, b=∞, c=∞, d=∞, t=∞</span></div>
+        <div class="step"><span class="step-num">Pass 1</span><span class="step-content">s→a: 10, s→c: 3<br>c→a: min(10,3+4)=7, c→d: 11, c→b: min(∞,3+6)=9<br>d→b: min(9,11+(-5))=6, b→t: 7<br>a→b: min(6,7+2)=6 (no change)</span></div>
+        <div class="step"><span class="step-num">Pass 2-4</span><span class="step-content">Pass 2: No improvements. Converged.<br>Final: s=0, a=7, b=6, c=3, d=11, t=7</span></div>
+        <div class="answer-box"><strong>✅ Shortest: s→c=3, s→c→a=7, s→c→d→b=6, t=7</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">How do you detect a negative cycle using Bellman-Ford? Show with example graph: A→B(1), B→C(-3), C→A(1).</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Detection</span><span class="step-content">After V-1 relaxation passes, do ONE MORE pass.<br>If any dist[v] still decreases → negative cycle!</span></div>
+        <div class="step"><span class="step-num">Example</span><span class="step-content">Cycle A→B→C→A: total weight = 1+(-3)+1 = -1 (negative!)<br>After V-1=2 passes, dist[A]=0, dist[B]=1, dist[C]=-2<br>Pass 3 (extra): C→A: dist[A]=min(0,-2+1)=-1 < 0! → UPDATED<br>A distance decreased → NEGATIVE CYCLE DETECTED.</span></div>
+        <div class="answer-box"><strong>✅ If Vth relaxation still updates any dist → Negative Cycle Exists!</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">Graph: (0→1: -1), (0→2: 4), (1→2: 3), (1→3: 2), (1→4: 2), (3→1: 1), (3→2: 5), (4→3: -3). Source=0. Find all distances.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Init</span><span class="step-content">dist=[0,∞,∞,∞,∞]</span></div>
+        <div class="step"><span class="step-num">Pass 1</span><span class="step-content">0→1: -1, 0→2: 4<br>1→2: min(4,-1+3)=2, 1→3: -1+2=1, 1→4: -1+2=1<br>4→3: min(1,1+(-3))=-2<br>3→1: min(-1,-2+1)=-1 (no change)</span></div>
+        <div class="step"><span class="step-num">Pass 2</span><span class="step-content">3→1: min(-1,-2+1)=-1 (no change)<br>1→2: min(2,-1+3)=2 (no change)<br>Converged.</span></div>
+        <div class="answer-box"><strong>✅ dist: 0=0, 1=-1, 2=2, 3=-2, 4=1</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='08-floyd-warshall.html'">← Floyd-Warshall</button>
+    <button class="nav-btn" onclick="window.location.href='10-tsp.html'">Next: TSP →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(9)){d.push(9);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(9)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floyd-Warshall | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#3fb950}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(63,185,80,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#58a6ff;color:#000}
+.container{max-width:960px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+pre{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:monospace;font-size:.88rem;color:#c9d1d9;overflow-x:auto;margin:12px 0}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#3fb950,#2ea043);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.matrix-wrap{overflow-x:auto;margin:12px 0}
+table.matrix{border-collapse:collapse;font-size:.85rem;font-family:monospace}
+table.matrix th{background:rgba(63,185,80,.15);color:var(--accent);padding:8px 16px;border:1px solid var(--border);text-align:center}
+table.matrix td{padding:8px 16px;border:1px solid var(--border);text-align:center;min-width:50px}
+table.matrix td.updated{background:rgba(63,185,80,.15);color:#3fb950;font-weight:700}
+table.matrix td.inf{color:var(--dim)}
+.formula-box{background:linear-gradient(135deg,rgba(63,185,80,.08),rgba(63,185,80,.03));border:1px solid rgba(63,185,80,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;font-size:1rem;color:#3fb950}
+.tip-box{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#79c0ff}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟢 Graph Algorithm #8</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🔁</div>
+    <h1 class="hero-title">Floyd-Warshall Algorithm</h1>
+    <p class="hero-sub">Find shortest paths between ALL pairs of vertices in a weighted graph.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Floyd+Warshall+Algorithm" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>Floyd-Warshall computes the <strong>shortest path between every pair (i,j)</strong> of vertices. It works with <strong>negative edges</strong> (but not negative cycles).</p>
+    <p><strong>Key Idea:</strong> For each intermediate vertex <code>k</code>, check: "Is the path from i to j shorter if we go through k?"</p>
+    <div class="formula-box">dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])</div>
+    <p>Repeat this for every possible intermediate vertex k (from 1 to n). This is a <strong>DP approach</strong> — building from paths with no intermediates up to paths with all possible intermediates.</p>
+    <div class="tip-box"><strong>💡 Remember:</strong> The outer loop is over intermediate vertex k, then i, then j. Order matters!</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. Finds <strong>all-pairs shortest paths</strong> in one run.</div>
+    <div class="key-point">2. Time Complexity: <code>O(V³)</code> — three nested loops.</div>
+    <div class="key-point">3. Space Complexity: <code>O(V²)</code> for the distance matrix.</div>
+    <div class="key-point">4. Works with <strong>negative edge weights</strong> (unlike Dijkstra).</div>
+    <div class="key-point">5. If <code>dist[i][i] &lt; 0</code> after running → <strong>negative cycle exists</strong>.</div>
+    <div class="key-point">6. Initial matrix: <code>dist[i][j] = weight(i,j)</code> if edge exists, else <code>∞</code>; <code>dist[i][i]=0</code>.</div>
+    <div class="key-point">7. After k iterations, dist[i][j] = shortest path using only vertices {1..k} as intermediates.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p>4 vertices. Edges: 1→2(3), 1→4(7), 2→1(8), 2→3(2), 3→4(1), 4→2(4)</p>
+    <p><strong>Initial Matrix D⁰:</strong></p>
+    <div class="matrix-wrap">
+    <table class="matrix">
+      <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+      <tr><th>1</th><td>0</td><td>3</td><td>∞</td><td>7</td></tr>
+      <tr><th>2</th><td>8</td><td>0</td><td>2</td><td>∞</td></tr>
+      <tr><th>3</th><td>∞</td><td>∞</td><td>0</td><td>1</td></tr>
+      <tr><th>4</th><td>∞</td><td>4</td><td>∞</td><td>0</td></tr>
+    </table>
+    </div>
+    <p><strong>After k=1 (via vertex 1):</strong> d[2][4]=min(∞,8+7)=15, d[4][2]=4(no change)</p>
+    <p><strong>After k=2 (via vertex 2):</strong> d[1][3]=min(∞,3+2)=5, d[4][3]=min(∞,4+2)=6, d[2][4]=15</p>
+    <p><strong>After k=3 (via vertex 3):</strong> d[1][4]=min(7,5+1)=6, d[2][4]=min(15,2+1)=3, d[4][4]=0</p>
+    <p><strong>After k=4 (via vertex 4):</strong> d[1][2]=min(3,6+4)=3, d[3][2]=min(∞,1+4)=5, d[2][1]=min(8,3+∞)=8...</p>
+    <div class="answer-box"><strong>✅ Final D⁴: 1→3=5, 1→4=6, 2→4=3, 3→2=5, etc.</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Apply Floyd-Warshall on this 3×3 matrix:<br>D = [[0,3,∞],[2,0,1],[∞,7,0]]. Find all-pairs shortest paths.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">k=1 (via 1)</span><span class="step-content">Check if going through vertex 1 improves any path:<br>d[2][j] via 1: d[2][1]+d[1][j]<br>d[2][3]=min(1, 2+∞)=1 (no change)<br>d[3][j] via 1: d[3][1]=∞, so nothing changes for row 3 via 1.</span></div>
+        <div class="step"><span class="step-num">k=2 (via 2)</span><span class="step-content">d[1][3]=min(∞, 3+1)=4 ✓ UPDATED<br>d[3][1]=min(∞, 7+2)=9 ✓ UPDATED<br>d[3][3]=min(0, 7+1)=0 (no change)</span></div>
+        <div class="step"><span class="step-num">k=3 (via 3)</span><span class="step-content">d[1][2]=min(3, 4+7)=3 (no change)<br>d[2][1]=min(2, 1+9)=2 (no change)<br>d[3][1]=min(9,0+9)=9</span></div>
+        <div class="answer-box"><strong>✅ Final matrix: [[0,3,4],[2,0,1],[9,7,0]]</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Graph: A→B(1), A→C(5), B→C(2), B→D(4), C→D(1). Run Floyd-Warshall and find shortest path from A to D.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Setup</span><span class="step-content">D⁰ (A=1,B=2,C=3,D=4):<br>[[0,1,5,∞],[∞,0,2,4],[∞,∞,0,1],[∞,∞,∞,0]]</span></div>
+        <div class="step"><span class="step-num">k=A</span><span class="step-content">Nothing improves (row A has ∞ entries for unreachable)</span></div>
+        <div class="step"><span class="step-num">k=B</span><span class="step-content">d[A][C]=min(5,1+2)=3 ✓, d[A][D]=min(∞,1+4)=5 ✓</span></div>
+        <div class="step"><span class="step-num">k=C</span><span class="step-content">d[A][D]=min(5,3+1)=4 ✓, d[B][D]=min(4,2+1)=3 ✓</span></div>
+        <div class="answer-box"><strong>✅ Shortest A→D = 4, via A→B→C→D</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">What is the time complexity of Floyd-Warshall and how does it compare to running Dijkstra from every vertex?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Floyd-Warshall</span><span class="step-content">Three nested loops over V vertices each → O(V³)<br>Works with negative edges, simple to implement.</span></div>
+        <div class="step"><span class="step-num">V × Dijkstra</span><span class="step-content">Run Dijkstra V times: V × O(V²) = O(V³) with adjacency matrix<br>Or V × O((V+E)logV) with priority queue.</span></div>
+        <div class="step"><span class="step-num">Comparison</span><span class="step-content">Same O(V³) for dense graphs. Dijkstra faster for sparse graphs with priority queue. Floyd-Warshall is simpler and handles negative edges (but no negative cycles).</span></div>
+        <div class="answer-box"><strong>✅ Both O(V³) for dense graphs. Floyd-Warshall preferred for simplicity and negative edge support.</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">After Floyd-Warshall, if dist[2][2] = -3, what does this mean? How do you detect negative cycles?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Meaning</span><span class="step-content">dist[2][2] represents the shortest path from vertex 2 back to itself. It should always be 0. If it's negative (-3), it means there's a cycle that includes vertex 2 with negative total weight.</span></div>
+        <div class="step"><span class="step-num">Detection</span><span class="step-content">After running Floyd-Warshall, check: if dist[i][i] &lt; 0 for ANY vertex i → negative cycle exists.<br>In that case, shortest paths are undefined (can always get shorter by traversing the cycle).</span></div>
+        <div class="answer-box"><strong>✅ dist[i][i] < 0 → negative cycle detected at vertex i!</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='07-dp-memoization.html'">← Memoization</button>
+    <button class="nav-btn" onclick="window.location.href='09-bellman-ford.html'">Next: Bellman-Ford →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(8)){d.push(8);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(8)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimal BST | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#58a6ff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:960px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#58a6ff,#1f6feb);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+table.obst-table{border-collapse:collapse;font-size:.83rem;margin:12px 0}
+table.obst-table th{background:rgba(88,166,255,.15);color:var(--accent);padding:8px 12px;border:1px solid var(--border);text-align:center}
+table.obst-table td{padding:8px 12px;border:1px solid var(--border);text-align:center}
+table.obst-table td.opt{background:rgba(63,185,80,.15);color:#3fb950;font-weight:700}
+.formula-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(88,166,255,.03));border:1px solid rgba(88,166,255,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#58a6ff;line-height:1.8}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🔵 Dynamic Programming #17</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🌲</div>
+    <h1 class="hero-title">Optimal Binary Search Tree</h1>
+    <p class="hero-sub">Construct a BST with minimum expected search cost given key probabilities.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Optimal+Binary+Search+Tree" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>Given n keys k₁ &lt; k₂ &lt; ... &lt; kₙ with probabilities p₁,p₂,...,pₙ (and dummy key probabilities q₀,...,qₙ), build a BST that <strong>minimizes expected search cost</strong>.</p>
+    <p>Cost of searching key kᵢ at depth d = (d+1) × pᵢ (root is depth 1).</p>
+    <div class="formula-box">
+e[i][j] = expected cost for keys i..j<br>
+e[i][j] = min{e[i][r-1] + e[r+1][j] + w(i,j)} for r = i..j<br>
+w(i,j) = sum of all p and q from i to j (total probability)<br>
+Base: e[i][i-1] = q[i-1]
+    </div>
+    <p><strong>Intuition:</strong> When you add a root r to a subtree containing keys i..j, all depths increase by 1, adding w(i,j) to the cost.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. <strong>e[i][j]</strong> = minimum expected search cost for keys i to j.</div>
+    <div class="key-point">2. <strong>w[i][j]</strong> = sum of probabilities of all keys and dummy keys in range i..j.</div>
+    <div class="key-point">3. <strong>root[i][j]</strong> = root of optimal BST for keys i..j (for reconstruction).</div>
+    <div class="key-point">4. Time: <code>O(n³)</code>, Space: <code>O(n²)</code>.</div>
+    <div class="key-point">5. More frequent keys should be closer to the root (lower depth).</div>
+    <div class="key-point">6. Dummy keys (q values) represent searching for a key that's NOT in the tree.</div>
+    <div class="key-point">7. Total probability: Σpᵢ + Σqᵢ = 1.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p>n=3 keys: k1, k2, k3 with p=[0.15, 0.10, 0.05] and dummy q=[0.05, 0.10, 0.05, 0.05] (q0..q3)</p>
+    <p>Wait — for this example, let p₁=0.15, p₂=0.10, p₃=0.05, q₀=0.05, q₁=0.10, q₂=0.05, q₃=0.05</p>
+    <p><strong>w table:</strong> w[i][j] = w[i][j-1] + p[j] + q[j]</p>
+    <p>w[1][1]=q[0]+p[1]+q[1]=0.05+0.15+0.10=0.30, w[1][2]=0.30+p[2]+q[2]=0.30+0.10+0.05=0.45, w[1][3]=0.45+0.05+0.05=0.55</p>
+    <p><strong>e table (simplified example):</strong></p>
+    <ul>
+      <li>e[1][1]=e[1][0]+e[2][1]+w[1][1]=q[0]+q[1]+w[1][1]=0.05+0.10+0.30=0.45 (root=k1)</li>
+      <li>e[2][2]=q[1]+q[2]+w[2][2]=0.10+0.05+p[2]+q[2]=0.10+0.05+0.10+0.05=0.30</li>
+      <li>e[3][3]=q[2]+q[3]+w[3][3]=0.05+0.05+0.05+0.05=0.20</li>
+    </ul>
+    <div class="answer-box"><strong>✅ Build full table continuing for lengths 2,3. The root giving minimum e[1][n] is the optimal root.</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">What is the purpose of dummy keys (q values) in Optimal BST? What do they represent?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Meaning</span><span class="step-content">Dummy keys represent <strong>unsuccessful searches</strong> — searching for a value that's NOT in the tree.<br>qᵢ = probability of searching for a key between kᵢ and kᵢ₊₁.<br>q₀ = probability of searching for something less than k₁.<br>qₙ = probability of searching for something greater than kₙ.</span></div>
+        <div class="step"><span class="step-num">Importance</span><span class="step-content">Without q values, we only optimize successful searches. Real applications have both successful and unsuccessful searches. Including q makes the optimization realistic and complete.</span></div>
+        <div class="answer-box"><strong>✅ Dummy keys = failed search probabilities. Ensures the tree is optimized for ALL searches, not just successful ones.</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">n=4 keys. Probabilities: p=[0.1, 0.2, 0.4, 0.3]. No dummy keys (q=0). Find optimal BST (which key should be root?).</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Analysis</span><span class="step-content">Without dummy keys, w[i][j]=sum of p[i..j].<br>e[r][r]=p[r] for single keys.<br>For e[1][4], we try each r=1,2,3,4 as root:<br>r=1: e[empty]+e[2][4]+w[1][4]=0+(cost of 2,3,4 as right subtree)+1.0<br>r=2: e[1][1]+e[3][4]+w[1][4]=0.1+(cost of 3,4)+1.0<br>r=3: e[1][2]+e[4][4]+1.0=(0.1+0.2+?)+0.3+1.0<br>r=4: e[1][3]+e[empty]+1.0</span></div>
+        <div class="step"><span class="step-num">Intuition</span><span class="step-content">Key 3 (p=0.4) has highest probability → should be root or near root to minimize cost. Keys searched more often should be at smaller depth.</span></div>
+        <div class="step"><span class="step-num">Result</span><span class="step-content">Full DP gives: Optimal root = k3 (highest probability = lowest expected depth). Expected cost ≈ 1.8</span></div>
+        <div class="answer-box"><strong>✅ k3 (p=0.4) should be root — most frequent key gets depth 1.</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">Why can't we just use a regular BST (e.g., sorted insertion or balanced BST) instead of Optimal BST?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Regular BST</span><span class="step-content">A balanced BST minimizes the maximum depth (O(log n) for all searches). But if some keys are searched 100x more often than others, a balanced tree doesn't exploit this — rare keys get the same depth as frequent ones.</span></div>
+        <div class="step"><span class="step-num">Optimal BST</span><span class="step-content">Optimal BST minimizes the EXPECTED search cost considering probabilities. High-probability keys get smaller depths (closer to root) at the cost of making rare keys deeper. Trade-off is computed exactly by DP.</span></div>
+        <div class="step"><span class="step-num">Example</span><span class="step-content">If p1=0.90, p2=0.09, p3=0.01: Optimal BST puts k1 at root (depth 1). Balanced BST puts k2 at root → expected cost is higher since k1 is searched 90% of the time at depth 2 instead of 1.</span></div>
+        <div class="answer-box"><strong>✅ Regular BST optimizes structure. Optimal BST optimizes for search frequency — minimizes expected cost with given probabilities.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='16-matrix-chain.html'">← Matrix Chain</button>
+    <button class="nav-btn" onclick="window.location.href='18-np-complete.html'">Next: NP-Complete →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(17)){d.push(17);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(17)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

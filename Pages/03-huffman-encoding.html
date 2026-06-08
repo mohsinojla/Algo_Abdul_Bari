@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Huffman Encoding | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#f0883e}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.9rem}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.topic-badge{background:rgba(240,136,62,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9rem;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}
+li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px;font-size:.95rem}
+.complexity-table{width:100%;border-collapse:collapse;margin-top:12px}
+.complexity-table th{background:var(--surface2);padding:10px 16px;text-align:left;font-size:.85rem;color:var(--dim);border:1px solid var(--border)}
+.complexity-table td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem;min-width:24px;text-align:center}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#f0883e,#e06820);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+table.data-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+table.data-table th{background:rgba(240,136,62,.15);color:var(--accent);padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table td{padding:8px 12px;text-align:center;border:1px solid var(--border)}
+.formula-box{background:linear-gradient(135deg,rgba(240,136,62,.08),rgba(240,136,62,.03));border:1px solid rgba(240,136,62,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;font-size:1rem;color:#f0883e}
+.tip-box{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#79c0ff}
+.tree-diagram{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:20px;margin:14px 0;font-family:monospace;white-space:pre;font-size:.85rem;overflow-x:auto;color:#c9d1d9}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟠 Greedy Algorithm #3</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🌳</div>
+    <h1 class="hero-title">Huffman Encoding</h1>
+    <p class="hero-sub">Greedy algorithm to create optimal prefix-free codes for data compression.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Huffman+Coding" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>Huffman coding assigns <strong>shorter binary codes to more frequent characters</strong> and longer codes to rare ones. This minimizes the total number of bits used — it's used in ZIP, JPEG, MP3.</p>
+    <p><strong>Algorithm:</strong></p>
+    <ol>
+      <li>Create a <strong>leaf node</strong> for each character with its frequency.</li>
+      <li>Put all nodes in a <strong>min-priority queue</strong> (min-heap).</li>
+      <li>Repeat until 1 node remains: extract the two minimum-frequency nodes, create a new internal node with their sum as frequency, make them left and right children, insert back.</li>
+      <li>The final tree gives the codes: <strong>left edge = 0, right edge = 1</strong>.</li>
+    </ol>
+    <div class="formula-box">Huffman Code Length = Σ (frequency × code_length) bits</div>
+    <div class="tip-box"><strong>💡 Key Property:</strong> Huffman codes are <em>prefix-free</em> — no code is a prefix of another. This makes decoding unambiguous.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. <strong>Min-heap</strong> is used — always pick two nodes with minimum frequency.</div>
+    <div class="key-point">2. The character with <strong>lowest frequency gets the longest code</strong>.</div>
+    <div class="key-point">3. The resulting tree is called a <strong>Huffman Tree</strong> (full binary tree).</div>
+    <div class="key-point">4. Number of merge operations = <strong>n-1</strong> for n characters.</div>
+    <div class="key-point">5. Time Complexity: <code>O(n log n)</code> using a min-heap.</div>
+    <div class="key-point">6. Total bits = Σ(freq × depth) where depth = length of code for that character.</div>
+    <div class="key-point">7. Huffman is <strong>optimal</strong> — no other prefix-free code gives fewer total bits.</div>
+    <table class="complexity-table">
+      <tr><th>Step</th><th>Complexity</th></tr>
+      <tr><td>Build min-heap</td><td>O(n)</td></tr>
+      <tr><td>Extract+Insert (n-1 times)</td><td>O(n log n)</td></tr>
+      <tr><td>Overall</td><td><strong>O(n log n)</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p>Characters: a(5), b(9), c(12), d(13), e(16), f(45)</p>
+    <p><strong>Min-heap steps:</strong></p>
+    <ol>
+      <li>Extract a(5), b(9) → merge → ab(14). Heap: [c(12), d(13), ab(14), e(16), f(45)]</li>
+      <li>Extract c(12), d(13) → merge → cd(25). Heap: [ab(14), e(16), cd(25), f(45)]</li>
+      <li>Extract ab(14), e(16) → merge → abe(30). Heap: [cd(25), abe(30), f(45)]</li>
+      <li>Extract cd(25), abe(30) → merge → cdabe(55). Heap: [f(45), cdabe(55)]</li>
+      <li>Extract f(45), cdabe(55) → merge → root(100).</li>
+    </ol>
+    <div class="tree-diagram">
+                    (100)
+                   /     \
+                f(45)   (55)
+                        /    \
+                     (25)   (30)
+                     / \    / \
+                   c   d  (14) e
+                          / \
+                         a   b
+
+Codes: f=0, c=100, d=101, a=1100, b=1101, e=111
+    </div>
+    <div class="answer-box"><strong>✅ Total bits = 45×1 + 12×3 + 13×3 + 5×4 + 9×4 + 16×3 = 45+36+39+20+36+48 = 224 bits</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Characters with frequencies: A=5, B=1, C=6, D=3, E=4. Build Huffman tree and find codes for each character.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Min-heap: B(1), D(3), E(4), A(5), C(6)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Extract B(1)+D(3) → BD(4). Heap:[E(4),BD(4),A(5),C(6)]<br>Extract E(4)+BD(4) → EBD(8). Heap:[A(5),C(6),EBD(8)]<br>Extract A(5)+C(6) → AC(11). Heap:[EBD(8),AC(11)]<br>Extract EBD(8)+AC(11) → root(19).</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Tree: root→left=EBD, right=AC<br>E=00, B=010, D=011, A=10, C=11</span></div>
+        <div class="answer-box"><strong>✅ A=10, B=010, C=11, D=011, E=00<br>Total bits = 5×2+1×3+6×2+3×3+4×2 = 10+3+12+9+8 = 42 bits</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Frequencies: a=45, b=13, c=12, d=16, e=9, f=5. Calculate total bits with Huffman encoding vs fixed 3-bit encoding for 100,000 characters.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Build Huffman tree (classic example):<br>Codes: a=0(1 bit), b=101(3), c=100(3), d=111(3), e=1101(4), f=1100(4)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Huffman total bits = 45×1+13×3+12×3+16×3+9×4+5×4<br>= 45+39+36+48+36+20 = <strong>224 bits</strong> per 100 chars<br>For 100,000 chars: 224,000 bits = 28,000 bytes</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Fixed 3-bit: 100 chars × 3 = 300 bits per 100<br>For 100,000 chars: 300,000 bits = 37,500 bytes<br>Savings = (300,000-224,000)/300,000 ≈ <strong>25.3%</strong></span></div>
+        <div class="answer-box"><strong>✅ Huffman: 224,000 bits | Fixed: 300,000 bits | Saves ~25%</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">4 characters: W=2, X=3, Y=7, Z=10. Build Huffman tree. What is the code for each character?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Min-heap: W(2), X(3), Y(7), Z(10)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Merge W(2)+X(3) → WX(5). Heap:[Y(7),WX(5),Z(10)] → [WX(5),Y(7),Z(10)]<br>Merge WX(5)+Y(7) → WXY(12). Heap:[Z(10),WXY(12)]<br>Merge Z(10)+WXY(12) → root(22)</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Tree: root→0=Z, 1=WXY→10=Y, 11=WX→110=W, 111=X</span></div>
+        <div class="answer-box"><strong>✅ Z=0(1 bit), Y=10(2 bits), W=110(3 bits), X=111(3 bits)</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">How many bits are needed to encode "aababcabc" using Huffman coding? Frequencies: a=5, b=3, c=1.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Count: a=5, b=3, c=1. Min-heap: c(1),b(3),a(5)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Merge c(1)+b(3)→cb(4). Heap:[a(5),cb(4)]<br>Merge a(5)+cb(4)→root(9)</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">Codes: a=0(1 bit), b=11(2 bits), c=10(2 bits)<br>Encode "aababcabc": a+a+b+a+b+c+a+b+c<br>= 0+0+11+0+11+10+0+11+10 = 0,0,11,0,11,10,0,11,10<br>Bits = 5×1 + 3×2 + 1×2 = 5+6+2 = <strong>13 bits</strong></span></div>
+        <div class="answer-box"><strong>✅ 13 bits needed (vs 9×2=18 bits with fixed 2-bit encoding)</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='02-job-sequencing.html'">← Job Sequencing</button>
+    <button class="nav-btn" onclick="window.location.href='04-optimal-merge.html'">Next: Optimal Merge →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(3)){d.push(3);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(3)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

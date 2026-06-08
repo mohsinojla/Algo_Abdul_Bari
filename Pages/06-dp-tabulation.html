@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DP Tabulation | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#58a6ff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.topic-badge{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+pre{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:monospace;font-size:.88rem;color:#c9d1d9;overflow-x:auto;margin:12px 0}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#58a6ff,#1f6feb);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.comparison-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.cg-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.cg-title{font-weight:700;margin-bottom:10px;font-size:.95rem}
+.cg-title.tab{color:#58a6ff}
+.cg-title.memo{color:#f0883e}
+.formula-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(88,166,255,.03));border:1px solid rgba(88,166,255,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#58a6ff}
+.dp-table{border-collapse:collapse;margin:10px 0;font-size:.88rem}
+.dp-table th,.dp-table td{border:1px solid var(--border);padding:8px 14px;text-align:center}
+.dp-table th{background:rgba(88,166,255,.15);color:var(--accent)}
+.dp-table td.highlight{background:rgba(88,166,255,.15);color:var(--accent);font-weight:700}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🔵 Dynamic Programming #6</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">📊</div>
+    <h1 class="hero-title">Dynamic Programming — Tabulation</h1>
+    <p class="hero-sub">Bottom-up DP: build solutions to sub-problems iteratively in a table.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Dynamic+Programming+Tabulation" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p><strong>Dynamic Programming</strong> solves problems by breaking them into overlapping sub-problems and storing results to avoid recomputation.</p>
+    <p><strong>Tabulation (Bottom-Up)</strong>: Start from the smallest sub-problem and build up to the original problem. Fill a table iteratively — no recursion needed.</p>
+    <div class="comparison-grid">
+      <div class="cg-card">
+        <div class="cg-title tab">🔵 Tabulation (Bottom-Up)</div>
+        <ul style="font-size:.85rem">
+          <li>Fill table from base cases up</li>
+          <li>Iterative (loops)</li>
+          <li>No recursion stack overflow</li>
+          <li>Generally faster in practice</li>
+          <li>Must compute ALL sub-problems</li>
+        </ul>
+      </div>
+      <div class="cg-card">
+        <div class="cg-title memo">🟠 Memoization (Top-Down)</div>
+        <ul style="font-size:.85rem">
+          <li>Recursive + cache results</li>
+          <li>Only computes needed sub-problems</li>
+          <li>More natural/intuitive</li>
+          <li>Risk of stack overflow for deep recursion</li>
+          <li>Uses a memo/cache dictionary</li>
+        </ul>
+      </div>
+    </div>
+    <div class="formula-box">Tabulation: dp[i] = f(dp[i-1], dp[i-2], ...) — fill left to right</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. <strong>Identify overlapping sub-problems</strong> — if recursive solution recomputes same values, DP applies.</div>
+    <div class="key-point">2. <strong>Define the DP state</strong> — what does dp[i] or dp[i][j] represent?</div>
+    <div class="key-point">3. <strong>Write the recurrence relation</strong> — how does dp[i] depend on smaller sub-problems?</div>
+    <div class="key-point">4. <strong>Establish base cases</strong> — fill smallest values first.</div>
+    <div class="key-point">5. <strong>Fill order matters</strong> — each cell must be computed before cells that depend on it.</div>
+    <div class="key-point">6. Usually achieves <strong>polynomial time</strong> vs exponential for naive recursion.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example — Fibonacci</div>
+    <p>fib(n) = fib(n-1) + fib(n-2), fib(0)=0, fib(1)=1</p>
+    <p><strong>Tabulation for n=7:</strong></p>
+    <table class="dp-table">
+      <tr><th>n</th><th>0</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
+      <tr><td>dp[n]</td><td>0</td><td>1</td><td>1</td><td>2</td><td>3</td><td>5</td><td>8</td><td class="highlight">13</td></tr>
+    </table>
+    <pre>dp[0]=0, dp[1]=1
+for i in 2..n:
+    dp[i] = dp[i-1] + dp[i-2]
+return dp[n]   // Time: O(n), Space: O(n)</pre>
+    <div class="answer-box"><strong>✅ fib(7) = 13 | Time: O(n) vs Naive O(2ⁿ)</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Using DP tabulation, compute the number of ways to climb n=5 stairs, if you can take 1 or 2 steps at a time.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">State</span><span class="step-content">dp[i] = number of ways to reach stair i<br>Recurrence: dp[i] = dp[i-1] + dp[i-2]<br>Base: dp[0]=1 (stand at ground), dp[1]=1</span></div>
+        <div class="step"><span class="step-num">Fill</span><span class="step-content">dp[2]=dp[1]+dp[0]=1+1=2<br>dp[3]=dp[2]+dp[1]=2+1=3<br>dp[4]=dp[3]+dp[2]=3+2=5<br>dp[5]=dp[4]+dp[3]=5+3=8</span></div>
+        <div class="answer-box"><strong>✅ 8 ways to climb 5 stairs</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Coin change problem: coins={1,3,5}, amount=7. Find minimum number of coins using tabulation.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">State</span><span class="step-content">dp[i] = min coins to make amount i<br>dp[0]=0, dp[i]=∞ initially<br>dp[i] = min(dp[i-c]+1) for each coin c ≤ i</span></div>
+        <div class="step"><span class="step-num">Fill</span><span class="step-content">dp[0]=0<br>dp[1]=dp[0]+1=1 (coin 1)<br>dp[2]=dp[1]+1=2 (coin 1)<br>dp[3]=min(dp[2]+1,dp[0]+1)=1 (coin 3!)<br>dp[4]=dp[3]+1=2<br>dp[5]=min(dp[4]+1,dp[2]+1,dp[0]+1)=1 (coin 5!)<br>dp[6]=dp[5]+1=2<br>dp[7]=min(dp[6]+1,dp[4]+1,dp[2]+1)=min(3,3,3)=3? Wait: dp[7]=dp[6]+1=3 or dp[4]+1=3 or min(dp[2]+1)=3</span></div>
+        <div class="step"><span class="step-num">Answer</span><span class="step-content">dp[7]=3 (e.g., 5+1+1 or 3+3+1)</span></div>
+        <div class="answer-box"><strong>✅ Minimum 3 coins (e.g., 5+1+1)</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">What are the 4 steps to solve any DP problem? Apply them to find the n-th Tribonacci number where T(n)=T(n-1)+T(n-2)+T(n-3).</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content"><strong>Identify sub-problems:</strong> T(n) depends on T(n-1), T(n-2), T(n-3) — overlapping!</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content"><strong>Define state:</strong> dp[i] = i-th Tribonacci number</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content"><strong>Recurrence:</strong> dp[i] = dp[i-1]+dp[i-2]+dp[i-3]<br><strong>Base cases:</strong> dp[0]=0, dp[1]=1, dp[2]=1</span></div>
+        <div class="step"><span class="step-num">Step 4</span><span class="step-content"><strong>Fill table</strong> for n=7:<br>dp=[0,1,1,2,4,7,13,24]<br>dp[3]=0+1+1=2, dp[4]=1+1+2=4, dp[5]=1+2+4=7, dp[6]=2+4+7=13, dp[7]=4+7+13=24</span></div>
+        <div class="answer-box"><strong>✅ T(7) = 24 | Time: O(n), Space: O(n) or O(1)</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">Longest Increasing Subsequence (LIS) using tabulation. Array: [3, 1, 8, 2, 5]. Find LIS length.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">State</span><span class="step-content">dp[i] = length of LIS ending at index i<br>Base: dp[i]=1 for all i (each element alone)</span></div>
+        <div class="step"><span class="step-num">Fill</span><span class="step-content">dp[0]=1 (3)<br>dp[1]=1 (1, nothing smaller before)<br>dp[2]=2 (3,8 or 1,8 — 1 element before 8 is smaller)<br>dp[3]=2 (1,2)<br>dp[4]=3 (1,2,5)</span></div>
+        <div class="step"><span class="step-num">Answer</span><span class="step-content">max(dp) = max(1,1,2,2,3) = 3 → subsequence [1,2,5]</span></div>
+        <div class="answer-box"><strong>✅ LIS = 3, subsequence: [1, 2, 5]</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='05-dijkstra.html'">← Dijkstra's</button>
+    <button class="nav-btn" onclick="window.location.href='07-dp-memoization.html'">Next: Memoization →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(6)){d.push(6);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(6)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

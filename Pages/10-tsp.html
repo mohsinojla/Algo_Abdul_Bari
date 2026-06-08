@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSP | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#58a6ff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#58a6ff,#1f6feb);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+table.data-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.85rem}
+table.data-table th{background:rgba(88,166,255,.15);color:var(--accent);padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table td{padding:8px 12px;text-align:center;border:1px solid var(--border)}
+.formula-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(88,166,255,.03));border:1px solid rgba(88,166,255,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#58a6ff}
+.tip-box{background:rgba(255,123,114,.08);border:1px solid rgba(255,123,114,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#ff7b72}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🔵 DP / NP-Hard #10</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🚗</div>
+    <h1 class="hero-title">Travelling Salesman Problem (TSP)</h1>
+    <p class="hero-sub">Find the shortest Hamiltonian cycle that visits all cities exactly once and returns to start.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Travelling+Salesman+Problem+DP" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>A salesman must visit <strong>n cities</strong>, starting and ending at the <strong>same city</strong>, visiting each city exactly once. Goal: minimize total travel distance.</p>
+    <p><strong>Brute Force:</strong> Try all (n-1)! permutations → O(n!) — impossible for large n.</p>
+    <p><strong>DP Approach (Held-Karp):</strong> Use bitmask DP to represent which cities have been visited.</p>
+    <div class="formula-box">dp[S][i] = minimum cost to visit all cities in set S, ending at city i, starting from city 0</div>
+    <p><strong>Recurrence:</strong> <code>dp[S][i] = min over all j in S\{i}: dp[S\{i}][j] + cost[j][i]</code></p>
+    <div class="tip-box"><strong>⚠️ TSP is NP-Hard</strong> — no polynomial algorithm is known. DP gives O(2ⁿ × n²) which is exponential but much better than O(n!). For exams, usually n ≤ 4 or 5.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. TSP is <strong>NP-Hard</strong> — believed no polynomial solution exists.</div>
+    <div class="key-point">2. Exact DP solution: <code>O(2ⁿ × n²)</code> time, <code>O(2ⁿ × n)</code> space.</div>
+    <div class="key-point">3. A <strong>Hamiltonian cycle</strong> = visits every vertex exactly once and returns to start.</div>
+    <div class="key-point">4. For small n (≤4), can enumerate all permutations directly.</div>
+    <div class="key-point">5. The DP state uses a <strong>bitmask</strong> to represent the set of visited cities.</div>
+    <div class="key-point">6. Base: dp[{0}][0] = 0 (at start city, cost 0).</div>
+    <div class="key-point">7. Final answer: min over all i: dp[{all cities}][i] + cost[i][0].</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example (4 cities, brute force)</div>
+    <p>Cost matrix (cities 1,2,3,4, start=1):</p>
+    <table class="data-table">
+      <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th></tr>
+      <tr><td>1</td><td>0</td><td>10</td><td>15</td><td>20</td></tr>
+      <tr><td>2</td><td>10</td><td>0</td><td>35</td><td>25</td></tr>
+      <tr><td>3</td><td>15</td><td>35</td><td>0</td><td>30</td></tr>
+      <tr><td>4</td><td>20</td><td>25</td><td>30</td><td>0</td></tr>
+    </table>
+    <p><strong>All routes starting and ending at 1:</strong></p>
+    <ul>
+      <li>1→2→3→4→1: 10+35+30+20 = <strong>95</strong></li>
+      <li>1→2→4→3→1: 10+25+30+15 = <strong>80</strong></li>
+      <li>1→3→2→4→1: 15+35+25+20 = <strong>95</strong></li>
+      <li>1→3→4→2→1: 15+30+25+10 = <strong>80</strong></li>
+      <li>1→4→2→3→1: 20+25+35+15 = <strong>95</strong></li>
+      <li>1→4→3→2→1: 20+30+35+10 = <strong>95</strong></li>
+    </ul>
+    <div class="answer-box"><strong>✅ Minimum TSP tour = 80 (1→2→4→3→1 or 1→3→4→2→1)</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Cost matrix for 4 cities (start=1): [0,5,6,3],[5,0,3,6],[6,3,0,7],[3,6,7,0]. Find minimum TSP tour.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Routes</span><span class="step-content">1→2→3→4→1: 5+3+7+3=18<br>1→2→4→3→1: 5+6+7+6=24<br>1→3→2→4→1: 6+3+6+3=18<br>1→3→4→2→1: 6+7+6+5=24<br>1→4→2→3→1: 3+6+3+6=18<br>1→4→3→2→1: 3+7+3+5=18</span></div>
+        <div class="answer-box"><strong>✅ Minimum = 18 (multiple optimal tours)</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Using DP Held-Karp notation, define g(S,i) for TSP. For 3 cities {1,2,3} starting at 1, show how to compute g({2,3},2) and g({2,3},3).</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Definition</span><span class="step-content">g(S,i) = minimum cost path starting at vertex 1, visiting all vertices in set S exactly once, ending at vertex i.</span></div>
+        <div class="step"><span class="step-num">Base cases</span><span class="step-content">g({2},2) = cost[1][2]<br>g({3},3) = cost[1][3]<br>(Only city 1 was the start, now reached city 2 or 3)</span></div>
+        <div class="step"><span class="step-num">Recurrence</span><span class="step-content">g({2,3},2) = g({3},3) + cost[3][2] (come from 3 to 2, set S\{2}={3})<br>g({2,3},3) = g({2},2) + cost[2][3] (come from 2 to 3)</span></div>
+        <div class="step"><span class="step-num">Final</span><span class="step-content">Optimal = min(g({2,3},2)+cost[2][1], g({2,3},3)+cost[3][1])</span></div>
+        <div class="answer-box"><strong>✅ DP builds up: base cases → intermediate sets → full set → add return cost</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">Why is TSP considered NP-Hard? How many tours are there for n=10 cities?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">NP-Hard</span><span class="step-content">TSP is NP-Hard because: (1) No polynomial-time algorithm is known. (2) All known exact algorithms are exponential. (3) It's as hard as the hardest problems in NP — every NP problem can be reduced to it.</span></div>
+        <div class="step"><span class="step-num">Count</span><span class="step-content">For n cities, fixing start: (n-1)!/2 distinct tours (dividing by 2 for direction).<br>n=10: 9!/2 = 362880/2 = 181,440 tours.<br>n=20: 19!/2 ≈ 60 quadrillion tours!</span></div>
+        <div class="answer-box"><strong>✅ n=10 → 181,440 tours. Grows as O(n!) — computationally intractable.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='09-bellman-ford.html'">← Bellman-Ford</button>
+    <button class="nav-btn" onclick="window.location.href='11-lcs.html'">Next: LCS →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(10)){d.push(10);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(10)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

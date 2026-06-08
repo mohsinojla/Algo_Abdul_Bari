@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Sequencing | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#f0883e}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:.2s}
+.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+.topic-badge{background:rgba(240,136,62,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;font-size:.9rem;cursor:pointer;border:none;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}
+li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px;font-size:.95rem}
+.complexity-table{width:100%;border-collapse:collapse;margin-top:12px}
+.complexity-table th{background:var(--surface2);padding:10px 16px;text-align:left;font-size:.85rem;color:var(--dim);border:1px solid var(--border)}
+.complexity-table td{padding:10px 16px;border:1px solid var(--border);font-size:.9rem}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem;min-width:24px;text-align:center}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#f0883e,#e06820);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+table.data-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.88rem}
+table.data-table th{background:rgba(240,136,62,.15);color:var(--accent);padding:8px 12px;text-align:center;border:1px solid var(--border)}
+table.data-table td{padding:8px 12px;text-align:center;border:1px solid var(--border)}
+.slot-box{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+.slot{width:50px;height:50px;border:2px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;flex-direction:column}
+.slot.filled{border-color:var(--accent);background:rgba(240,136,62,.15);color:var(--accent)}
+.slot.empty{color:var(--dim)}
+.slot small{font-size:.6rem;color:var(--dim)}
+.formula-box{background:linear-gradient(135deg,rgba(240,136,62,.08),rgba(240,136,62,.03));border:1px solid rgba(240,136,62,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;font-size:1rem;color:#f0883e}
+.tip-box{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.3);border-radius:8px;padding:12px 16px;margin:12px 0;font-size:.88rem;color:#79c0ff}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer;font-size:.9rem;transition:.2s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🟠 Greedy Algorithm #2</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">📋</div>
+    <h1 class="hero-title">Job Sequencing with Deadlines</h1>
+    <p class="hero-sub">Schedule jobs greedily to maximize total profit before their deadlines.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Job+Sequencing+Deadlines" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>You have <strong>n jobs</strong>, each taking exactly <strong>1 time unit</strong>. Each job has a <strong>profit</strong> and a <strong>deadline</strong>. You can do at most one job per time slot.</p>
+    <p>Goal: Select a subset of jobs and schedule them to <strong>maximize total profit</strong> without missing any deadline.</p>
+    <p><strong>Greedy Strategy:</strong> Sort jobs by profit in <em>descending order</em>. For each job (most profitable first), try to schedule it in the <strong>latest available slot ≤ its deadline</strong>.</p>
+    <div class="formula-box">Sort by Profit ↓ → For each job, assign to latest free slot ≤ deadline</div>
+    <div class="tip-box"><strong>💡 Why latest available slot?</strong> Scheduling a job as late as possible leaves earlier slots free for other high-profit jobs.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. All jobs take exactly <strong>1 unit of time</strong>.</div>
+    <div class="key-point">2. Sort jobs by profit in <strong>descending order</strong>.</div>
+    <div class="key-point">3. Maintain a <strong>slot array</strong> of size = max deadline. All slots initially free.</div>
+    <div class="key-point">4. For each job: find the <strong>latest free slot ≤ deadline</strong> and assign it.</div>
+    <div class="key-point">5. If no free slot available before deadline → <strong>skip the job</strong>.</div>
+    <div class="key-point">6. Time Complexity: <code>O(n²)</code> for simple approach, <code>O(n log n)</code> with Union-Find.</div>
+    <div class="key-point">7. Output: Selected jobs + their order + total profit.</div>
+    <table class="complexity-table">
+      <tr><th>Operation</th><th>Complexity</th></tr>
+      <tr><td>Sorting</td><td>O(n log n)</td></tr>
+      <tr><td>Scheduling (naive)</td><td>O(n²)</td></tr>
+      <tr><td>Overall (exam)</td><td><strong>O(n²)</strong></td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example</div>
+    <p><strong>Jobs:</strong></p>
+    <table class="data-table">
+      <tr><th>Job</th><th>Deadline</th><th>Profit</th></tr>
+      <tr><td>J1</td><td>2</td><td>100</td></tr>
+      <tr><td>J2</td><td>1</td><td>19</td></tr>
+      <tr><td>J3</td><td>2</td><td>27</td></tr>
+      <tr><td>J4</td><td>1</td><td>25</td></tr>
+      <tr><td>J5</td><td>3</td><td>15</td></tr>
+    </table>
+    <p style="margin-top:12px"><strong>After sorting by profit:</strong> J1(100) → J3(27) → J4(25) → J2(19) → J5(15)</p>
+    <p><strong>Max deadline = 3 → Slots: [_, _, _]</strong></p>
+    <ul>
+      <li>J1 (deadline=2): assign slot 2 → Slots: [_, J1, _]</li>
+      <li>J3 (deadline=2): slot 2 taken → try slot 1 → Slots: [J3, J1, _]</li>
+      <li>J4 (deadline=1): slot 1 taken, no earlier slot → <strong>skip</strong></li>
+      <li>J2 (deadline=1): slot 1 taken → <strong>skip</strong></li>
+      <li>J5 (deadline=3): assign slot 3 → Slots: [J3, J1, J5]</li>
+    </ul>
+    <div class="answer-box"><strong>✅ Selected: J3, J1, J5 → Profit = 27 + 100 + 15 = 142</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Jobs: A(d=2,p=100), B(d=1,p=19), C(d=2,p=27), D(d=1,p=25), E(d=3,p=15). Find max profit sequence.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Sort by profit: A(100) > C(27) > D(25) > B(19) > E(15)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Max deadline=3. Create slots: [S1, S2, S3] all free.</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">A(d=2): latest free ≤ 2 → S2. Slots:[_, A, _]<br>C(d=2): try S2 (taken), try S1 → S1. Slots:[C, A, _]<br>D(d=1): try S1 (taken) → no free slot → skip<br>B(d=1): try S1 (taken) → skip<br>E(d=3): try S3 (free) → S3. Slots:[C, A, E]</span></div>
+        <div class="answer-box"><strong>✅ Sequence: C→A→E | Total Profit = 27+100+15 = 142</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Jobs: J1(d=4,p=20), J2(d=1,p=10), J3(d=1,p=40), J4(d=1,p=30), J5(d=3,p=10). Find optimal schedule.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Sort by profit: J3(40) > J4(30) > J1(20) > J2=J5(10)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Max deadline=4. Slots: [S1, S2, S3, S4] all free.</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">J3(d=1): S1 → Slots:[J3,_,_,_]<br>J4(d=1): S1 taken → skip<br>J1(d=4): S4 → Slots:[J3,_,_,J1]<br>J2(d=1): S1 taken → skip<br>J5(d=3): S3 → Slots:[J3,_,J5,J1]</span></div>
+        <div class="answer-box"><strong>✅ Sequence: J3→_→J5→J1 | Profit = 40+10+20 = 70</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">Jobs: J1(d=2,p=60), J2(d=1,p=100), J3(d=3,p=20), J4(d=2,p=40), J5(d=1,p=20). Find max profit and schedule.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Sort: J2(100) > J1(60) > J4(40) > J3=J5(20)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Max deadline=3. Slots:[S1,S2,S3]</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">J2(d=1): S1 free → S1. [J2,_,_]<br>J1(d=2): S2 free → S2. [J2,J1,_]<br>J4(d=2): S2 taken, S1 taken → skip<br>J3(d=3): S3 free → S3. [J2,J1,J3]<br>J5(d=1): S1 taken → skip</span></div>
+        <div class="answer-box"><strong>✅ J2→J1→J3 | Profit = 100+60+20 = 180</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">5 jobs: (d=3,p=50),(d=1,p=10),(d=2,p=20),(d=1,p=5),(d=3,p=30). Find max profit schedule.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Label and sort: A(50)>E(30)>C(20)>B(10)>D(5)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">Slots:[S1,S2,S3]</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">A(d=3): S3→[_,_,A]<br>E(d=3): S2→[_,E,A]<br>C(d=2): S1→[C,E,A]<br>B(d=1): S1 taken→skip<br>D(d=1): S1 taken→skip</span></div>
+        <div class="answer-box"><strong>✅ C→E→A | Profit = 20+30+50 = 100</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q5</span>
+        <span class="q-text">What is the maximum number of jobs that can be scheduled if jobs are: J1(d=1,p=5), J2(d=3,p=10), J3(d=2,p=6), J4(d=2,p=3), J5(d=4,p=11)?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Step 1</span><span class="step-content">Sort: J5(11)>J2(10)>J3(6)>J1(5)>J4(3)</span></div>
+        <div class="step"><span class="step-num">Step 2</span><span class="step-content">4 slots (max deadline=4).</span></div>
+        <div class="step"><span class="step-num">Step 3</span><span class="step-content">J5(d=4)→S4, J2(d=3)→S3, J3(d=2)→S2, J1(d=1)→S1, J4(d=2) S2 taken→S1 taken→skip<br>Slots:[J1,J3,J2,J5]</span></div>
+        <div class="answer-box"><strong>✅ 4 jobs scheduled: J1,J3,J2,J5 | Profit = 5+6+10+11 = 32</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='01-fractional-knapsack.html'">← Fractional Knapsack</button>
+    <button class="nav-btn" onclick="window.location.href='03-huffman-encoding.html'">Next: Huffman Encoding →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(2)){d.push(2);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(2)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

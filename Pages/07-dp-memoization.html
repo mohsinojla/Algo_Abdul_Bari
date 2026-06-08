@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DP Memoization | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#58a6ff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+pre{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:monospace;font-size:.88rem;color:#c9d1d9;overflow-x:auto;margin:12px 0;line-height:1.7}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#58a6ff,#1f6feb);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.call-tree{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;font-family:monospace;font-size:.82rem;color:#c9d1d9;margin:12px 0;line-height:1.8}
+.cached{color:#f0883e;font-weight:700}
+.formula-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(88,166,255,.03));border:1px solid rgba(88,166,255,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#58a6ff}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🔵 Dynamic Programming #7</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🗃️</div>
+    <h1 class="hero-title">Dynamic Programming — Memoization</h1>
+    <p class="hero-sub">Top-down DP: recursive solution with a cache to avoid redundant computation.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Memoization+Dynamic+Programming" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p><strong>Memoization</strong> is the "top-down" approach to DP. You write a normal recursive function, but <strong>cache</strong> (remember) the result of each sub-problem the first time it's computed. If the same sub-problem is encountered again, return the cached value instead of recomputing.</p>
+    <p><strong>3-Step Process:</strong></p>
+    <ol>
+      <li>Write the naive recursive solution.</li>
+      <li>Add a memo dictionary/array.</li>
+      <li>Before computing: check if memo has the answer. After computing: store in memo.</li>
+    </ol>
+    <div class="formula-box">memo[n] = result → if already computed, return memo[n] immediately</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. <strong>Top-down approach</strong> — start with original problem, recurse to smaller ones.</div>
+    <div class="key-point">2. Cache stores: <code>memo[input] = result</code>.</div>
+    <div class="key-point">3. <strong>Only computes sub-problems that are actually needed</strong> (lazy evaluation).</div>
+    <div class="key-point">4. Each unique sub-problem is solved exactly <strong>once</strong>.</div>
+    <div class="key-point">5. Without memo: fib(n) = O(2ⁿ). With memo: fib(n) = <code>O(n)</code>.</div>
+    <div class="key-point">6. Memo can be a <strong>dictionary</strong> (Python), <strong>array</strong>, or <strong>hash map</strong>.</div>
+    <div class="key-point">7. Risk: <strong>stack overflow</strong> for very deep recursion (use tabulation then).</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example — Fibonacci with Memo</div>
+    <p><strong>Without memo:</strong> fib(5) calls fib(3) twice, fib(2) three times...</p>
+    <div class="call-tree">fib(5) → fib(4) + fib(3)
+       fib(4) → fib(3) + fib(2)   ← fib(3) computed AGAIN
+          fib(3) → fib(2) + fib(1) ← fib(2) computed again...
+Total calls: 2ⁿ (exponential!)</div>
+    <p><strong>With memo:</strong></p>
+    <div class="call-tree">fib(5) → fib(4) + <span class="cached">fib(3)[cached=2]</span>
+   fib(4) → fib(3) + <span class="cached">fib(2)[cached=1]</span>
+      fib(3) → fib(2) + fib(1)   ← computed ONCE, stored
+         fib(2) → fib(1)+fib(0) = 1 ← computed ONCE
+Total unique calls: n (linear!)</div>
+    <pre>memo = {}
+def fib(n):
+    if n &lt;= 1: return n
+    if n in memo: return memo[n]   # Cache hit!
+    memo[n] = fib(n-1) + fib(n-2) # Compute + store
+    return memo[n]</pre>
+    <div class="answer-box"><strong>✅ fib(5) = 5 | Without memo: 15 calls | With memo: 5 calls</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">How many unique sub-problems does fib(6) compute with memoization? Trace the call tree and identify which calls are cache hits.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Trace</span><span class="step-content">fib(6) calls fib(5) and fib(4).<br>fib(5) calls fib(4)→[cache hit!] and fib(3).<br>fib(4) calls fib(3)→[cache hit!] and fib(2).<br>fib(3) calls fib(2)→[cache hit!] and fib(1).<br>fib(2)=fib(1)+fib(0)=1.</span></div>
+        <div class="step"><span class="step-num">Count</span><span class="step-content">Unique computations: fib(0),fib(1),fib(2),fib(3),fib(4),fib(5) = 6 unique sub-problems.<br>Cache hits: fib(4) in fib(5), fib(3) in fib(4), fib(2) in fib(3) = many reuses.</span></div>
+        <div class="answer-box"><strong>✅ 6 unique sub-problems. Without memo: 25 calls. With memo: 6 calls!</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Grid paths: An m×n grid, you can move only right or down. Count paths from (0,0) to (3,3) using memoization.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Recurrence</span><span class="step-content">paths(m,n) = paths(m-1,n) + paths(m,n-1)<br>Base: paths(0,j)=1, paths(i,0)=1 (only one way along edge)</span></div>
+        <div class="step"><span class="step-num">Fill</span><span class="step-content">paths(1,1)=paths(0,1)+paths(1,0)=1+1=2<br>paths(2,1)=paths(1,1)+paths(2,0)=2+1=3<br>paths(1,2)=paths(0,2)+paths(1,1)=1+2=3<br>paths(2,2)=paths(1,2)+paths(2,1)=3+3=6<br>paths(3,1)=paths(2,1)+paths(3,0)=3+1=4<br>paths(3,2)=paths(2,2)+paths(3,1)=6+4=10<br>paths(1,3)=4, paths(2,3)=10<br>paths(3,3)=paths(2,3)+paths(3,2)=10+10=20</span></div>
+        <div class="answer-box"><strong>✅ 20 unique paths from (0,0) to (3,3)</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">What is the time and space complexity of memoized fibonacci? Compare with naive recursion and tabulation.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Naive</span><span class="step-content">Time: O(2ⁿ) — exponential (recomputes same values)<br>Space: O(n) recursion stack</span></div>
+        <div class="step"><span class="step-num">Memoization</span><span class="step-content">Time: O(n) — each sub-problem solved once<br>Space: O(n) for memo + O(n) recursion stack = O(n)</span></div>
+        <div class="step"><span class="step-num">Tabulation</span><span class="step-content">Time: O(n) — same as memoization<br>Space: O(n) for table, O(1) if optimized (only keep last 2 values)<br>No recursion stack risk!</span></div>
+        <div class="answer-box"><strong>✅ Both memo and tabulation: O(n) time. Tabulation is usually preferred for space optimization.</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">Convert this naive recursive function to memoized: f(n) = f(n-1) + 2*f(n-2) + 3*f(n-3), f(0)=1, f(1)=2, f(2)=3. Find f(6).</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Code</span><span class="step-content">memo={0:1, 1:2, 2:3}<br>def f(n):<br>&nbsp;&nbsp;if n in memo: return memo[n]<br>&nbsp;&nbsp;memo[n]=f(n-1)+2*f(n-2)+3*f(n-3)<br>&nbsp;&nbsp;return memo[n]</span></div>
+        <div class="step"><span class="step-num">Compute</span><span class="step-content">f(3)=f(2)+2*f(1)+3*f(0)=3+4+3=10<br>f(4)=f(3)+2*f(2)+3*f(1)=10+6+6=22<br>f(5)=f(4)+2*f(3)+3*f(2)=22+20+9=51<br>f(6)=f(5)+2*f(4)+3*f(3)=51+44+30=125</span></div>
+        <div class="answer-box"><strong>✅ f(6) = 125</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='06-dp-tabulation.html'">← DP Tabulation</button>
+    <button class="nav-btn" onclick="window.location.href='08-floyd-warshall.html'">Next: Floyd-Warshall →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(7)){d.push(7);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(7)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>

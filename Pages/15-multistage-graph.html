@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multistage Graph | Algo Prep</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;--text:#e6edf3;--dim:#8b949e;--accent:#58a6ff}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.back-btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer}
+.back-btn:hover{border-color:var(--accent)}
+.topic-badge{background:rgba(88,166,255,.15);color:var(--accent);border:1px solid var(--accent);padding:5px 14px;border-radius:20px;font-size:.82rem;font-weight:600}
+.done-btn{background:var(--accent);color:#000;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:700}
+.done-btn.marked{background:#3fb950}
+.container{max-width:900px;margin:0 auto;padding:40px 24px}
+.hero-section{text-align:center;margin-bottom:48px}
+.hero-icon{font-size:4rem;margin-bottom:16px}
+.hero-title{font-size:2.2rem;font-weight:700;margin-bottom:10px}
+.hero-sub{color:var(--dim);font-size:1rem;max-width:600px;margin:0 auto 20px}
+.yt-btn{display:inline-flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:10px 24px;border-radius:8px;font-weight:600;text-decoration:none}
+.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px}
+.section-title{font-size:1.2rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.section-title::before{content:'';display:inline-block;width:4px;height:22px;background:var(--accent);border-radius:2px}
+p{color:#c9d1d9;line-height:1.75;margin-bottom:12px}
+ul,ol{color:#c9d1d9;line-height:1.8;padding-left:22px}li{margin-bottom:6px}
+code{background:var(--surface2);color:#79c0ff;padding:2px 6px;border-radius:4px;font-family:monospace}
+.key-point{background:var(--surface2);border-left:3px solid var(--accent);padding:10px 16px;border-radius:0 8px 8px 0;margin-bottom:10px}
+.q-card{background:var(--surface2);border:1px solid var(--border);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.q-header{padding:18px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+.q-header:hover{background:rgba(255,255,255,.03)}
+.q-num{background:var(--accent);color:#000;font-weight:700;font-size:.8rem;padding:3px 10px;border-radius:10px;min-width:fit-content}
+.q-text{font-size:.95rem;line-height:1.6;flex:1}
+.q-toggle{color:var(--dim);font-size:1.2rem}
+.q-solution{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.q-solution.open{display:block}
+.step{display:flex;gap:14px;margin-bottom:14px;padding:12px 16px;background:var(--bg);border-radius:8px;border:1px solid var(--border)}
+.step-num{background:linear-gradient(135deg,#58a6ff,#1f6feb);color:#fff;font-weight:700;font-size:.8rem;padding:4px 10px;border-radius:8px;min-width:fit-content;height:fit-content}
+.step-content{flex:1;font-size:.9rem;line-height:1.7;color:#c9d1d9}
+.answer-box{background:rgba(63,185,80,.1);border:1px solid #3fb950;border-radius:8px;padding:14px 18px;margin-top:10px}
+.answer-box strong{color:#3fb950}
+.formula-box{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(88,166,255,.03));border:1px solid rgba(88,166,255,.3);border-radius:10px;padding:16px 20px;margin:14px 0;text-align:center;font-family:monospace;color:#58a6ff;line-height:1.8}
+.graph-diagram{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:14px 0;font-family:monospace;font-size:.82rem;color:#c9d1d9;line-height:2}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:40px;padding-top:24px;border-top:1px solid var(--border)}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:10px 24px;border-radius:8px;cursor:pointer}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='../index.html'">← Home</button>
+  <span class="topic-badge">🔵 Dynamic Programming #15</span>
+  <button class="done-btn" id="doneBtn" onclick="markDone()">Mark as Done ✓</button>
+</div>
+<div class="container">
+  <div class="hero-section">
+    <div class="hero-icon">🧩</div>
+    <h1 class="hero-title">Multistage Graph</h1>
+    <p class="hero-sub">Find the shortest path from source to target in a directed graph with stages using DP.</p>
+    <a class="yt-btn" href="https://www.youtube.com/results?search_query=Abdul+Bari+Multistage+Graph+Dynamic+Programming" target="_blank">▶ Watch Abdul Bari on YouTube</a>
+  </div>
+
+  <div class="section">
+    <div class="section-title">📖 Concept Overview</div>
+    <p>A <strong>multistage graph</strong> is a directed, weighted graph where vertices are partitioned into <strong>k stages</strong>. Edges go only from stage i to stage i+1. Source is in stage 1, target in stage k.</p>
+    <p>Goal: Find the <strong>minimum cost path</strong> from source (s) to target (t).</p>
+    <p><strong>Two approaches:</strong></p>
+    <ul>
+      <li><strong>Forward approach:</strong> Compute cost[i] = min cost from vertex i to target. Work backwards from stage k-1 to stage 1. <code>cost[v] = min(w(v,u) + cost[u])</code> for all u reachable from v.</li>
+      <li><strong>Backward approach:</strong> Compute bcost[i] = min cost from source to vertex i. Work forward.</li>
+    </ul>
+    <div class="formula-box">Forward: cost[v] = min{ c(v,u) + cost[u] } for all edges (v,u)<br>Answer: cost[s]</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔑 Key Points</div>
+    <div class="key-point">1. Vertices grouped into <strong>k stages</strong>; edges only go forward (stage i → i+1).</div>
+    <div class="key-point">2. <strong>Forward approach</strong>: Start from destination, compute min cost working backwards.</div>
+    <div class="key-point">3. <strong>Backward approach</strong>: Start from source, compute min cost working forwards.</div>
+    <div class="key-point">4. Time Complexity: <code>O(V+E)</code> — each vertex and edge processed once.</div>
+    <div class="key-point">5. Track p[i] (next vertex in optimal path) for path reconstruction.</div>
+    <div class="key-point">6. Base case (forward): cost[target] = 0.</div>
+    <div class="key-point">7. DP is applicable because shortest path satisfies Principle of Optimality.</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🔍 Worked Example (Classic 4-stage graph)</div>
+    <div class="graph-diagram">
+Stage 1: {1}   Stage 2: {2,3,4}   Stage 3: {5,6,7}   Stage 4: {8}
+
+Edges:
+1→2(9), 1→3(7), 1→4(3)
+2→5(2), 2→6(3)
+3→5(6), 3→6(5)
+4→5(8), 4→7(2)
+5→8(6)
+6→8(5)
+7→8(5)
+    </div>
+    <p><strong>Forward DP (backward from target):</strong></p>
+    <ul>
+      <li>cost[8] = 0 (target)</li>
+      <li>Stage 3: cost[5] = 5+6=? → cost[5]=min(c(5,8)+cost[8])=6, cost[6]=5, cost[7]=5</li>
+      <li>Stage 2: cost[2]=min(c(2,5)+cost[5], c(2,6)+cost[6])=min(2+6,3+5)=min(8,8)=8 → p[2]=5 or 6<br>cost[3]=min(6+6,5+5)=min(12,10)=10 → p[3]=6<br>cost[4]=min(8+6,2+5)=min(14,7)=7 → p[4]=7</li>
+      <li>Stage 1: cost[1]=min(9+8, 7+10, 3+7)=min(17,17,10)=10 → p[1]=4</li>
+    </ul>
+    <div class="answer-box"><strong>✅ Min cost = 10 | Path: 1 → 4 → 7 → 8 (cost: 3+2+5=10)</strong></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">❓ Practice Questions</div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q1</span>
+        <span class="q-text">Multistage graph with 5 stages. Source=1, Target=12. Edges: 1→2(3),1→3(2),2→4(4),2→5(2),3→4(1),3→6(5),4→7(3),5→7(2),5→8(5),6→7(4),6→8(3),7→9(3),7→10(2),8→10(6),8→11(3),9→12(4),10→12(5),11→12(6). Find shortest path.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Stage 5</span><span class="step-content">cost[12]=0</span></div>
+        <div class="step"><span class="step-num">Stage 4</span><span class="step-content">cost[9]=c(9,12)+0=4<br>cost[10]=c(10,12)+0=5<br>cost[11]=c(11,12)+0=6</span></div>
+        <div class="step"><span class="step-num">Stage 3</span><span class="step-content">cost[7]=min(c(7,9)+4, c(7,10)+5)=min(3+4,2+5)=min(7,7)=7 →p[7]=9 or 10<br>cost[8]=min(c(8,10)+5, c(8,11)+6)=min(6+5,3+6)=min(11,9)=9→p[8]=11</span></div>
+        <div class="step"><span class="step-num">Stage 2</span><span class="step-content">cost[2]=min(c(2,4)+cost[4],c(2,5)+cost[5])... need cost[4-6]<br>cost[4]=min(c(4,7)+7)=3+7=10<br>cost[5]=min(c(5,7)+7,c(5,8)+9)=min(2+7,5+9)=9→p[5]=7<br>cost[6]=min(c(6,7)+7,c(6,8)+9)=min(4+7,3+9)=11→p[6]=7<br>cost[2]=min(4+10,2+9)=min(14,11)=11→p[2]=5<br>cost[3]=min(1+10,5+11)=min(11,16)=11→p[3]=4</span></div>
+        <div class="step"><span class="step-num">Stage 1</span><span class="step-content">cost[1]=min(3+11,2+11)=min(14,13)=13→p[1]=3<br>Path: 1→3→4→7→10→12</span></div>
+        <div class="answer-box"><strong>✅ Min cost = 13 | Path: 1→3→4→7→10→12</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q2</span>
+        <span class="q-text">Explain forward vs backward approach for multistage graph. When is each preferred?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Forward DP</span><span class="step-content"><strong>cost[v]</strong> = minimum cost from v to target.<br>Compute from last stage backwards to source.<br>cost[v] = min{c(v,u)+cost[u]} for all neighbors u<br>Answer: cost[source]</span></div>
+        <div class="step"><span class="step-num">Backward DP</span><span class="step-content"><strong>bcost[v]</strong> = minimum cost from source to v.<br>Compute from source forward to target.<br>bcost[v] = min{bcost[u]+c(u,v)} for all u in previous stage<br>Answer: bcost[target]</span></div>
+        <div class="step"><span class="step-num">Preference</span><span class="step-content">Both give same answer. Forward is more common in textbooks. Backward is like Dijkstra's approach. Use whichever is more natural for the given problem.</span></div>
+        <div class="answer-box"><strong>✅ Forward: work from target backwards. Backward: work from source forwards. Both O(V+E).</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q3</span>
+        <span class="q-text">Simple multistage graph: S→A(2),S→B(4),A→C(3),A→D(1),B→C(2),B→D(5),C→T(6),D→T(3). Find shortest path from S to T.</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Stage 4</span><span class="step-content">cost[T]=0</span></div>
+        <div class="step"><span class="step-num">Stage 3</span><span class="step-content">cost[C]=c(C,T)+0=6, p[C]=T<br>cost[D]=c(D,T)+0=3, p[D]=T</span></div>
+        <div class="step"><span class="step-num">Stage 2</span><span class="step-content">cost[A]=min(c(A,C)+6, c(A,D)+3)=min(3+6,1+3)=min(9,4)=4→p[A]=D<br>cost[B]=min(c(B,C)+6, c(B,D)+3)=min(2+6,5+3)=8→p[B]=C</span></div>
+        <div class="step"><span class="step-num">Stage 1</span><span class="step-content">cost[S]=min(c(S,A)+4, c(S,B)+8)=min(2+4,4+8)=min(6,12)=6→p[S]=A</span></div>
+        <div class="answer-box"><strong>✅ Min cost = 6 | Path: S→A→D→T (2+1+3=6)</strong></div>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-header" onclick="toggle(this)">
+        <span class="q-num">Q4</span>
+        <span class="q-text">What makes a graph a "multistage graph"? Can BFS/Dijkstra solve it? Why use DP?</span>
+        <span class="q-toggle">▼</span>
+      </div>
+      <div class="q-solution">
+        <div class="step"><span class="step-num">Definition</span><span class="step-content">A multistage graph has:<br>1. Vertices partitioned into k disjoint stages<br>2. Edges only go from stage i to stage i+1 (no backward/skip edges)<br>3. Single source (stage 1) and single sink (stage k)</span></div>
+        <div class="step"><span class="step-num">BFS vs DP</span><span class="step-content">Dijkstra/BFS can solve it but DP is more efficient for this specific structure.<br>DP exploits the stage structure: O(V+E) vs Dijkstra's O((V+E)logV).<br>The stage property guarantees no cycles → topological order for DP.</span></div>
+        <div class="answer-box"><strong>✅ DP is optimal for multistage graphs: exploits stage structure, O(V+E), no cycles.</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn" onclick="window.location.href='14-principle-optimality.html'">← Principle of Optimality</button>
+    <button class="nav-btn" onclick="window.location.href='16-matrix-chain.html'">Next: Matrix Chain →</button>
+  </div>
+</div>
+<script>
+function toggle(h){const s=h.nextElementSibling,a=h.querySelector('.q-toggle');s.classList.toggle('open');a.textContent=s.classList.contains('open')?'▲':'▼';}
+function markDone(){const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(!d.includes(15)){d.push(15);localStorage.setItem('algoDone',JSON.stringify(d));}document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+const d=JSON.parse(localStorage.getItem('algoDone')||'[]');if(d.includes(15)){document.getElementById('doneBtn').textContent='✅ Completed!';document.getElementById('doneBtn').classList.add('marked');}
+</script>
+</body>
+</html>
